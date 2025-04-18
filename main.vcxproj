@@ -130,10 +130,8 @@
     <ClCompile Include="..\..\CA1\ConsoleApplication1\UI.cpp" />
     <ClCompile Include="Account.cpp" />
     <ClCompile Include="BalanceInquiry.cpp" />
-    <ClCompile Include="ConsoleApplication1.cpp" />
     <ClCompile Include="Customer.cpp" />
     <ClCompile Include="Deposit.cpp" />
-    <ClCompile Include="Transaction.cpp" />
     <ClCompile Include="Withdraw.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -141,7 +139,6 @@
     <ClInclude Include="BalanceInquiry.h" />
     <ClInclude Include="Customer.h" />
     <ClInclude Include="Deposit.h" />
-    <ClInclude Include="Transaction.h" />
     <ClInclude Include="Withdraw.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
