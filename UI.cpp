@@ -3,22 +3,21 @@
 #include <limits>
 #include <iomanip>
 #include <cstdlib>
-
+#include "UI.h"
 using namespace std;
 
-class UI {
-private:
+
     bool loggedIn = false;
     string currentUserRole = "";
     string currentUsername = "";
 
     // Helper methods
-    void waitForEnter() const {
+    void UI::waitForEnter() const {
         cout << "\n   Press Enter to continue...";
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
 
-    int getIntInput() const {
+    int UI::getIntInput() const {
         int choice;
         cin >> choice;
         while (cin.fail()) {
@@ -31,7 +30,7 @@ private:
         return choice;
     }
 
-    double getDoubleInput() const {
+    double UI::getDoubleInput() const {
         double amount;
         cin >> amount;
         while (cin.fail() || amount < 0) {
@@ -44,16 +43,14 @@ private:
         return amount;
     }
 
-    string getTextInput() const {
+    string UI::getTextInput() const {
         string input;
         getline(cin, input);
         return input;
     }
 
-public:
-    UI() = default;
 
-    void clearScreen() const {
+    void UI::clearScreen() const {
 #ifdef _WIN32
         system("cls");
 #else
@@ -61,7 +58,7 @@ public:
 #endif
     }
 
-    void displayHeader() const {
+    void UI::displayHeader() const {
         cout << "\n";
         cout << "                                       **-----------------------------------------------------------------**\n";
         cout << "                                       **                         ISLAMIC BANK                            **\n";
@@ -71,25 +68,25 @@ public:
         cout << "                                       **-----------------------------------------------------------------**\n";
     }
 
-    void displayWelcome() const {
+    void UI::displayWelcome() const {
         if (loggedIn) {
             cout << "\n   Welcome, " << currentUsername << " [" << currentUserRole << "]\n";
         }
         cout << "\n";
     }
-    void displayMessage(const string& message) const {
+    void UI::displayMessage(const string& message) const {
         cout << "\n" << message << "\n";
     }
 
-    void displayError(const string& message) const {
+    void UI::displayError(const string& message) const {
         cout << "\n   [ERROR] " << message << "\n";
     }
 
-    void displaySuccess(const string& message) const {
+    void UI::displaySuccess(const string& message) const {
         cout << "\n   [SUCCESS] " << message << "\n";
     }
 
-    void showLoginScreen() {
+    void UI::showLoginScreen() {
         clearScreen();
         displayHeader();
         cout << "                                       **                         LOGIN SCREEN                            **\n";
@@ -121,7 +118,7 @@ public:
         waitForEnter();
     }
 
-    void showRegisterScreen() {
+    void UI::showRegisterScreen() {
         clearScreen();
         displayHeader();
         cout << "                                       **                   REGISTRATION SCREEN                           **\n";
@@ -155,7 +152,7 @@ public:
         waitForEnter();
     }
 
-    int displayMainMenu() {
+    int UI::displayMainMenu() {
         clearScreen();
         displayHeader();
 
@@ -182,7 +179,7 @@ public:
         return -1;
     }
 
-    int displayAdminMenu() {
+    int UI::displayAdminMenu() {
         //displayHeaderForAdmin();
 
         cout << "                                       **                     ADMINISTRATOR MENU                          **\n";
@@ -206,7 +203,7 @@ public:
         return getIntInput();
     }
 
-    int displayCustomerMenu() {
+    int UI::displayCustomerMenu() {
         cout << "                                       **                        CUSTOMER MENU                            **\n";
         cout << "                                       **-----------------------------------------------------------------**\n";
 
@@ -228,7 +225,7 @@ public:
         return getIntInput();
     }
 
-    void showAccountCreationScreen() {
+    void UI::showAccountCreationScreen() {
         clearScreen();
         displayHeader();
         cout << "                                       **                    CREATE A NEW ACCOUNT                         **\n";
@@ -267,7 +264,7 @@ public:
         waitForEnter();
     }
 
-    void showDepositScreen() {
+    void UI::showDepositScreen() {
         clearScreen();
         displayHeader();
         cout << "                                       **                         DEPOSIT FUNDS                           **\n";
@@ -287,7 +284,7 @@ public:
         waitForEnter();
     }
 
-    void showWithdrawalScreen() {
+    void UI::showWithdrawalScreen() {
         clearScreen();
         displayHeader();
         cout << "                                       **                      WITHDRAW FUNDS                             **\n";
@@ -307,7 +304,7 @@ public:
         waitForEnter();
     }
 
-    void showTransferScreen() {
+    void UI::showTransferScreen() {
         clearScreen();
         displayHeader();
         cout << "                                       **                       TRANSFER FUNDS                            **\n";
@@ -332,7 +329,7 @@ public:
         waitForEnter();
     }
 
-    void showTransactionDetails(int transactionId, const string& type, double amount,
+    void UI::showTransactionDetails(int transactionId, const string& type, double amount,
         const string& accountInfo, const string& date) {
         cout << "                                       **                     TRANSACTION DETAILS                         **\n";
         cout << "                                       **-----------------------------------------------------------------**\n";
@@ -347,7 +344,7 @@ public:
         waitForEnter();
     }
 
-    void showTransactionHistory() {
+    void UI::showTransactionHistory() {
         clearScreen();
         displayHeader();
         cout << "                                       **                     TRANSACTION HISTORY                         **\n";
@@ -362,7 +359,7 @@ public:
         waitForEnter();
     }
 
-    void showLoanApplicationScreen() {
+    void UI::showLoanApplicationScreen() {
         clearScreen();
         displayHeader();
         cout << "                                       **                   LOAN APPLICATION FORM                         **\n";
@@ -399,7 +396,7 @@ public:
         waitForEnter();
     }
 
-    void showLoanApprovalScreen() {
+    void UI::showLoanApprovalScreen() {
         clearScreen();
         displayHeader();
         cout << "                                       **                  LOAN APPLICATIONS REVIEW                       **\n";
@@ -430,7 +427,7 @@ public:
         waitForEnter();
     }
 
-    void logout() {
+    void UI::logout() {
         loggedIn = false;
         currentUserRole = "";
         currentUsername = "";
@@ -439,7 +436,7 @@ public:
     }
 
     // Main application loop
-    void run() {
+    void UI::run() {
         int choice;
 
         do {
@@ -561,14 +558,13 @@ public:
                     displayError("Invalid choice. Please try again.");
                     waitForEnter();
                 }
-            }
+                }
 
-        } while (choice != 0);
-    }
-};
+            } while (choice != 0);
+        }
 
-int main() {
-    UI bankUI;
-    bankUI.run();
-    return 0;
-}
+    //int main() {
+    //    UI bankUI;
+    //    bankUI.run();
+    //    return 0;
+    //}

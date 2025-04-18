@@ -26,13 +26,21 @@ vector<Transaction> Account::getTransactionHistory() const{ return Transactions;
 
 void  Account::viewTransactionsHistory() {
     if (Transactions.empty()) {
-        cout << "Account: " << accountId << " does not have any transactions to show." << endl;
+        message = "Account: " + to_string(accountId) + " does not have any transactions to show.";
+        display.displayError(message);
         return;
     }
     else {
-        cout << "For Account: " << accountId << endl << "The past transactions are: " << endl;
-        for (const Transaction& T : Transactions)
-            cout << "Transferred " << T.amount << " from account: " << T.acc1ID << " to account: " << T.acc2ID << endl;
+        message = "For Account: " + to_string(accountId) + "\n" + "The past transactions are: " + "\n";
+        display.displayMessage(message);
+        vector <string> involvedAccounts;
+        double amount;
+        for (const Transaction& Tran : Transactions) {
+            involvedAccounts = Tran.getInvolvedAccounts();
+            amount = Tran.getAmount();
+            message = "Transferred " + to_string(amount) + " from account: " + involvedAccounts[0] + " to account: " + involvedAccounts[1] + "\n";
+            display.displayMessage(message);
+        }
     }
 }
 

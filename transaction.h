@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <vector>
 #include <ctime>
@@ -15,15 +17,15 @@ private:
 
 public:
     // Constructor
-    Transaction(const std::string& id, double amt, const std::string& type, 
-                const std::vector<std::string>& accounts);
-    
+    Transaction(const std::string& id, double amt, const std::string& type,
+        const std::vector<std::string>& accounts);
+
     // Execute the transaction
     virtual bool execute();
-    
+
     // Validate if the transaction can be performed
     virtual bool validateTransaction();
-    
+
     // Getters
     double getAmount() const;
     std::time_t getTimestamp() const;
@@ -32,7 +34,7 @@ public:
     std::vector<std::string> getInvolvedAccounts() const;
     bool getIsValid() const;
     std::string getDescription() const;
-    
+
     // Setters
     void setDescription(const std::string& desc);
     void setIsValid(bool valid);

@@ -5,6 +5,8 @@
 using namespace std;
 class Deposit
 {
+	UI display;
+	string message;
 public:
 	void start(Account& acc, float amount);
 };

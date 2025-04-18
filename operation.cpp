@@ -90,7 +90,7 @@ bool LoginOperation::validateCredentials() {
         user = new Administrator("A001", "Admin User", password);
         return true;
     } else if (username == "customer" && password == "customer123") {
-        user = new Customer("C001", "Customer User", password);
+        user = new Customer("NAME","C001", password);
         return true;
     }
     

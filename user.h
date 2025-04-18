@@ -1,9 +1,12 @@
 #pragma once
-#include <string>
+#pragma once
 #include <vector>
+#include <string>
+#include "Account.h"
+#include "UI.h"
 
 class User {
-private:
+protected:
     std::string userID;
     std::string name;
     std::string password;
@@ -11,6 +14,7 @@ private:
     bool isLoggedIn;
 
 public:
+    User();
     // Constructor
     User(const std::string& id, const std::string& userName, 
          const std::string& pwd, const std::string& userRole);
@@ -54,29 +58,78 @@ public:
 };
 
 // Derived Customer class
-class Customer : public User {
-private:
-    std::vector<std::string> accountNumbers; // List of accounts owned by this customer
-    std::string contactInfo;
-    bool notificationsEnabled;
+
+class Customer : public User
+{
+    UI display;
+
+    string message;
+
+    vector<Account> Accounts;
+
+    string address;
+
+    int phoneNumber;
 
 public:
-    // Constructor
-    Customer(const std::string& id, const std::string& userName, const std::string& pwd);
-    
-    // Customer-specific methods
-    void viewOwnAccounts() const;
-    bool transferMoney(const std::string& fromAccount, const std::string& toAccount, double amount);
-    bool requestNewAccount(const std::string& accountType, double initialDeposit);
-    void viewTransactionHistory(const std::string& accountNumber) const;
-    void updateContactInfo(const std::string& newContactInfo);
-    void setNotificationPreferences(bool enable);
-    
-    // Account management
-    void addAccount(const std::string& accountNumber);
-    std::vector<std::string> getAccounts() const;
-    
-    // Override display menu
+
+    Customer();
+
+    Customer(const std::string& userName,const std::string& id, const std::string& pwd);
+
+    string getName();
+
+    string getAddress();
+
+    int getPhoneNumber();
+
+    vector<Account> getAccounts();
+
+    void updateContactInfo(string address, int PhoneNumber);
+
+    void viewOwnAccounts();
+
+    void transferMoney(Account& acc1, Account& acc2, Customer& recipient, float amount);
+
+    void requestNewAccount();
+
+    void viewTransactionHistory();
+
+    void addAccount(Account& acc);
+
+    void setAccounts(vector<Account> Account);
+
+    Account& getAccountWithID(int accID);
+
     void displayMenu() const override;
+
 };
+
+//Previous Implementation of Customer (Might need functions from it)
+//
+//class Customer : public User {
+//private:
+//    std::vector<std::string> accountNumbers; // List of accounts owned by this customer
+//    std::string contactInfo;
+//    bool notificationsEnabled;
+//
+//public:
+//    // Constructor
+//    Customer(const std::string& id, const std::string& userName, const std::string& pwd);
+//    
+//    // Customer-specific methods
+//    void viewOwnAccount() const;
+//    bool transferMoney(const std::string& fromAccount, const std::string& toAccount, double amount);
+//    bool requestNewAccount(const std::string& accountType, double initialDeposit);
+//    void viewTransactionHistory(const std::string& accountNumber) const;
+//    void updateContactInfo(const std::string& newContactInfo);
+//    void setNotificationPreferences(bool enable);
+//    
+//    // Account management
+//    void addAccount(const std::string& accountNumber);
+//    std::vector<std::string> getAccounts() const;
+//    
+//    // Override display menu
+//    void displayMenu() const override;
+
 

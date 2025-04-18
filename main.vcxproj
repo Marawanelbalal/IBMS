@@ -127,11 +127,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\CA1\ConsoleApplication1\UI.cpp" />
     <ClCompile Include="Account.cpp" />
     <ClCompile Include="BalanceInquiry.cpp" />
     <ClCompile Include="Customer.cpp" />
     <ClCompile Include="Deposit.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="operation.cpp" />
+    <ClCompile Include="transaction.cpp" />
+    <ClCompile Include="UI.cpp" />
+    <ClCompile Include="user.cpp" />
     <ClCompile Include="Withdraw.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -139,7 +143,15 @@
     <ClInclude Include="BalanceInquiry.h" />
     <ClInclude Include="Customer.h" />
     <ClInclude Include="Deposit.h" />
+    <ClInclude Include="operation.h" />
+    <ClInclude Include="transaction.h" />
+    <ClInclude Include="UI.h" />
+    <ClInclude Include="user.h" />
     <ClInclude Include="Withdraw.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitattributes" />
+    <None Include=".gitignore" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

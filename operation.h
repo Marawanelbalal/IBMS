@@ -1,3 +1,4 @@
+#pragma once 
 #ifndef OPERATION_H
 #define OPERATION_H
 
@@ -5,6 +6,7 @@
 #include <ctime>
 #include "User.h"
 #include "transaction.h"
+#include "Account.h"
 // #include "Account.h" // Assuming this exists based on project description
 
 // Base Operation class

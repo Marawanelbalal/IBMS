@@ -6,7 +6,8 @@ void Deposit::start(Account& acc, float amount) {
 
 	if (amount > 0) {
 		acc.addAmount(amount);
-		cout << "Successfully deposited: " << amount << " into account: " << acc.getAccountNumber() << ". New balance: " << acc.getBalance() << endl;
+		message = "Successfully deposited: " + to_string(amount) + " into account: " + to_string(acc.getAccountNumber()) + ". New balance: " + to_string(acc.getBalance()) + "\n";
+		display.displaySuccess(message);
 		return;
 	}
 	else { cout << "Given amount must be positive" << endl; return; }

@@ -1,11 +1,19 @@
 #pragma once
+
 #include <string>
 #include <vector>
-#include "Transaction.h"
+#include "UI.h"
+#include "transaction.h"
+
+
 using namespace std;
 class Account
 {
     string owner;
+
+    UI display;
+
+    string message;
 
     string currency;
     
@@ -16,6 +24,7 @@ class Account
     vector<Transaction> Transactions;
 
 public:
+
     Account();
 
     Account(string currency, string owner, float balance, int  accountId);
