@@ -12,11 +12,11 @@ using namespace std;
 
 int main() {
     // Create a bank instance
-    Bank bank;
+    UI displayer;
+    Bank bank(&displayer);
 
-    // Create a customer
-    Customer customer1("John Doe1","1019", "1234567890");
-    Customer customer2("John Doe1","1020", "1234567890");
+    // Initialize demo data
+    bank.initializeDemoData();
 
     // Display all users and accounts
     bank.viewAllUsers();

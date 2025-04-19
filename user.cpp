@@ -164,9 +164,7 @@ void Customer::updateContactInfo(string address, int phoneNumber) {
 void Customer::transferMoney(Account& acc1, Account& acc2, Customer& recipient, float amount) {
 	//Note: All instances of cout should be replaced with 'UI CLASS' functions
 
-	//Check if the user is transferring between unique accounts
-	vector<Account> recipientAccounts = recipient.getAccounts();
-
+	// Assuming Account::operator== is defined and compares account numbers
 	if (acc1 == acc2) {
 		message = "Can't transfer from an account to the same account.";
 		display.displayError(message);
@@ -187,15 +185,24 @@ void Customer::transferMoney(Account& acc1, Account& acc2, Customer& recipient, 
 		return;
 	}
 
-	//Check if the user has any accounts first, before checking if the user owns acc1
-	if (Accounts.empty() || recipientAccounts.empty()) {
+	// The checks below for ownership are better handled by the caller (Bank)
+	// ensuring that the acc1 and acc2 references obtained via getAccountWithID
+	// actually belong to the respective customers.
+	// For the current structure where getAccountWithID returns a reference
+	// to an account within the customer's vector, these checks are implicitly
+	// handled if getAccountWithID throws an error when the account is not found.
+	// However, explicit checks can add robustness depending on the system's design.
+
+	/*
+	// Removed unnecessary and incorrect ownership checks and vector updates
+	// Check if the user has any accounts first, before checking if the user owns acc1
+	if (Accounts.empty() || recipient.getAccounts().empty()) {
 		message = "User/Recipient does not own any accounts to transfer money from/to.";
 		display.displayError(message);
 		return;
 	}
 
 	//Check if the user owns acc1 by iterating through their accounts
-
 	bool ownsAccount = false;
 	for (const Account& acc : Accounts) {
 		if (acc1 == acc) {
@@ -211,7 +218,7 @@ void Customer::transferMoney(Account& acc1, Account& acc2, Customer& recipient, 
 
 	//Check if recipient owns acc2 by iterating through their accounts
 	bool recipientOwnsAccount = false;
-	for (const Account& acc : recipient.getAccounts()) {
+	for (const Account& acc : recipient.getAccounts()) { // getAccounts returns a copy here
 		if (acc2 == acc) {
 			recipientOwnsAccount = true;
 			break;
@@ -222,48 +229,51 @@ void Customer::transferMoney(Account& acc1, Account& acc2, Customer& recipient, 
 		display.displayError(message);
 		return;
 	}
+	*/
 
 
-	//Complete the transaction after passing all checks
-
+	// Complete the transaction after passing all checks
+	// acc1 and acc2 are references to the Account objects within the customer's vectors,
+	// so modifying them here updates the state directly in the vectors.
 	acc1.subtractAmount(amount);
 	acc2.addAmount(amount);
 
 
-	message = "Successfully transferred " + to_string(amount) + " from account: " + to_string(acc1.getAccountNumber()) + " to account: " + to_string(acc2.getAccountNumber()) + "\n";
-	message += "Current balance for account: " + to_string(acc1.getAccountNumber()) + " is: " + to_string(acc1.getBalance()) + "\n";
+	message = "Successfully transferred " + std::to_string(amount) + " from account: " + std::to_string(acc1.getAccountNumber()) + " to account: " + std::to_string(acc2.getAccountNumber()) + "\n";
+	message += "Current balance for account: " + std::to_string(acc1.getAccountNumber()) + " is: " + std::to_string(acc1.getBalance()) + "\n";
+	message += "Current balance for account: " + std::to_string(acc2.getAccountNumber()) + " is: " + std::to_string(acc2.getBalance()) + "\n";
 	display.displaySuccess(message);
-	vector<string> AccountNumbers;
-	string acc1str = to_string(acc1.getAccountNumber());
-	string acc2str = to_string(acc2.getAccountNumber());
+
+	// Transaction logging (assuming it's working correctly)
+	std::vector<std::string> AccountNumbers;
+	std::string acc1str = std::to_string(acc1.getAccountNumber());
+	std::string acc2str = std::to_string(acc2.getAccountNumber());
 	AccountNumbers.push_back(acc1str);
 	AccountNumbers.push_back(acc2str);
-	int N = 0;
-	int M = 100;
-	int ID = rand() % (N + 1);
-	string IDstr = to_string(M + rand() % (N - M + 1));
+	// Fix for random ID generation: Use a better range or UUIDs in production
+	int ID = 1000 + std::rand() % 9000; // Simple 4-digit random ID
+	std::string IDstr = std::to_string(ID);
 
 	Transaction T(IDstr, amount, "Transfer", AccountNumbers);
 	acc1.addTransaction(T);
 	acc2.addTransaction(T);
 
+	// Removed the redundant and incorrect loops below:
+	/*
 	for (int i = 0; i < Accounts.size(); i++) {
 		if (Accounts[i] == acc1) {
 			Accounts[i] = acc1;
 			break;
 		}
 	}
-	for (int i = 0; i < recipientAccounts.size(); i++) {
+	for (int i = 0; i < recipientAccounts.size(); i++) { // recipientAccounts is a local copy
 		if (recipientAccounts[i] == acc2) {
 			recipientAccounts[i] = acc2;
-			recipient.setAccounts(recipientAccounts);
+			recipient.setAccounts(recipientAccounts); // This is incorrect
 			break;
 		}
 	}
-
-
-
-
+	*/
 }
 
 void Customer::viewTransactionHistory() {

@@ -7,19 +7,20 @@
 #include "User.h"
 #include "UI.h"
 
+
 class Bank {
 private:
     std::map<std::string, Customer> customers; // key: customer name, value: customer object
     std::map<int, Account> accounts; // key: account id, value: account object
     std::map<std::string, User*> users; // key: user ID, value: user pointer
-    UI display;
+    UI* display;
     std::string message;
 
     // Helper method to generate unique account ID
     int generateUniqueAccountId();
 
 public:
-    Bank();
+    Bank(UI* display);
     ~Bank();
 
     // User management

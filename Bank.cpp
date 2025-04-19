@@ -5,10 +5,12 @@
 #include "Deposit.h"
 #include "Withdraw.h"
 
-Bank::Bank() {
+Bank::Bank(UI* display) {
     // Initialize random seed for account ID generation
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    this->display = display;
 }
+
 
 Bank::~Bank() {
     // Clean up dynamically allocated User objects
@@ -30,37 +32,37 @@ int Bank::generateUniqueAccountId() {
 void Bank::viewAllUsers() {
     if (users.empty()) {
         message = "No users in the system.";
-        display.displayMessage(message);
+        display->displayMessage(message);
         return;
     }
 
     message = "All Users in the System:\n";
-    display.displayMessage(message);
+    display->displayMessage(message);
 
     for (const auto& pair : users) {
         User* user = pair.second;
         message = "User ID: " + user->getUserID() + ", Name: " + user->getName() +
             ", Role: " + user->getRole();
-        display.displayMessage(message);
+        display->displayMessage(message);
     }
 }
 
 void Bank::viewAllAccounts() {
     if (accounts.empty()) {
         message = "No accounts in the system.";
-        display.displayMessage(message);
+        display->displayMessage(message);
         return;
     }
 
     message = "All Accounts in the System:\n";
-    display.displayMessage(message);
+    display->displayMessage(message);
 
     for (const auto& pair : accounts) {
         const Account& account = pair.second;
         message = "Account ID: " + std::to_string(account.getAccountNumber()) +
             ", Balance: " + std::to_string(account.getBalance()) +
             " " + account.getCurrency();
-        display.displayMessage(message);
+        display->displayMessage(message);
     }
 }
 
@@ -68,7 +70,7 @@ bool Bank::addUser(const std::string& id, const std::string& name, const std::st
     // Check if user ID already exists
     if (users.find(id) != users.end()) {
         message = "User ID already exists: " + id;
-        display.displayError(message);
+        display->displayError(message);
         return false;
     }
 
@@ -85,7 +87,7 @@ bool Bank::addUser(const std::string& id, const std::string& name, const std::st
     }
     else {
         message = "Invalid role: " + role;
-        display.displayError(message);
+        display->displayError(message);
         return false;
     }
 
@@ -93,7 +95,7 @@ bool Bank::addUser(const std::string& id, const std::string& name, const std::st
     users[id] = newUser;
 
     message = "User added successfully: " + name;
-    display.displaySuccess(message);
+    display->displaySuccess(message);
     return true;
 }
 
@@ -112,7 +114,7 @@ bool Bank::deleteUser(const std::string& userName) {
 
     if (!userToDelete) {
         message = "User not found: " + userName;
-        display.displayError(message);
+        display->displayError(message);
         return false;
     }
 
@@ -126,7 +128,7 @@ bool Bank::deleteUser(const std::string& userName) {
     users.erase(userIdToDelete);
 
     message = "User deleted successfully: " + userName;
-    display.displaySuccess(message);
+    display->displaySuccess(message);
     return true;
 }
 
@@ -135,7 +137,7 @@ bool Bank::resetUserPassword(const std::string& userId, const std::string& newPa
     auto it = users.find(userId);
     if (it == users.end()) {
         message = "User ID not found: " + userId;
-        display.displayError(message);
+        display->displayError(message);
         return false;
     }
 
@@ -146,11 +148,11 @@ bool Bank::resetUserPassword(const std::string& userId, const std::string& newPa
 
     if (success) {
         message = "Password reset successfully for user ID: " + userId;
-        display.displaySuccess(message);
+        display->displaySuccess(message);
     }
     else {
         message = "Failed to reset password for user ID: " + userId;
-        display.displayError(message);
+        display->displayError(message);
     }
 
     return success;
@@ -167,7 +169,7 @@ bool Bank::createAccount(const std::string& currency, const std::string& ownerNa
     accounts[accountId] = newAccount;
 
     message = "Account created successfully. Account ID: " + std::to_string(accountId);
-    display.displaySuccess(message);
+    display->displaySuccess(message);
 
     return true;
 }
@@ -177,7 +179,7 @@ bool Bank::addAccountToCustomer(int accountId, const std::string& customerName) 
     auto accountIt = accounts.find(accountId);
     if (accountIt == accounts.end()) {
         message = "Account not found: " + std::to_string(accountId);
-        display.displayError(message);
+        display->displayError(message);
         return false;
     }
 
@@ -185,7 +187,7 @@ bool Bank::addAccountToCustomer(int accountId, const std::string& customerName) 
     auto customerIt = customers.find(customerName);
     if (customerIt == customers.end()) {
         message = "Customer not found: " + customerName;
-        display.displayError(message);
+        display->displayError(message);
         return false;
     }
 
@@ -193,7 +195,7 @@ bool Bank::addAccountToCustomer(int accountId, const std::string& customerName) 
     customerIt->second.addAccount(accountIt->second);
 
     message = "Account " + std::to_string(accountId) + " added to customer " + customerName;
-    display.displaySuccess(message);
+    display->displaySuccess(message);
 
     return true;
 }
@@ -206,13 +208,13 @@ bool Bank::transferMoney(const std::string& fromCustomerName, int fromAccountId,
 
     if (!fromCustomer) {
         message = "Source customer not found: " + fromCustomerName;
-        display.displayError(message);
+        display->displayError(message);
         return false;
     }
 
     if (!toCustomer) {
         message = "Destination customer not found: " + toCustomerName;
-        display.displayError(message);
+        display->displayError(message);
         return false;
     }
 
@@ -226,7 +228,7 @@ bool Bank::transferMoney(const std::string& fromCustomerName, int fromAccountId,
     }
     catch (const std::runtime_error& e) {
         message = e.what();
-        display.displayError(message);
+        display->displayError(message);
         return false;
     }
 
@@ -283,5 +285,5 @@ void Bank::initializeDemoData() {
     addAccountToCustomer(id3, "John Doe2");
 
     message = "Demo data initialized successfully.";
-    display.displaySuccess(message);
+    display->displaySuccess(message);
 }
