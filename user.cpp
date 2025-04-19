@@ -102,18 +102,6 @@ bool Administrator::resetUserPassword(const std::string& userId, const std::stri
     return true;
 }
 
-void Administrator::displayMenu() const {
-    std::cout << "\n--- Administrator Menu ---" << std::endl;
-    std::cout << "1. Create User Account" << std::endl;
-    std::cout << "2. Delete User Account" << std::endl;
-    std::cout << "3. View All Accounts" << std::endl;
-    std::cout << "4. View All Users" << std::endl;
-    std::cout << "5. Generate Reports" << std::endl;
-    std::cout << "6. Modify System Settings" << std::endl;
-    std::cout << "7. Reset User Password" << std::endl;
-    std::cout << "8. Logout" << std::endl;
-    std::cout << "Enter your choice: ";
-}
 
 Customer::Customer()
 {
@@ -303,18 +291,6 @@ Account& Customer::getAccountWithID(int accID) {
 
 void Customer::requestNewAccount() {
 
-}
-
-void Customer::displayMenu() const {
-	std::cout << "\n--- Customer Menu ---" << std::endl;
-	std::cout << "1. View My Accounts" << std::endl;
-	std::cout << "2. Transfer Money" << std::endl;
-	std::cout << "3. Request New Account" << std::endl;
-	std::cout << "4. View Transaction History" << std::endl;
-	std::cout << "5. Update Contact Information" << std::endl;
-	std::cout << "6. Set Notification Preferences" << std::endl;
-	std::cout << "7. Logout" << std::endl;
-	std::cout << "Enter your choice: ";
 }
 
 //// Customer class implementation

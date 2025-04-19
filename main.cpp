@@ -9,6 +9,7 @@
 using namespace std;
 
 int main() {
+
     // Create accounts with the correct constructor parameters
     Account acc1("USD", "John Doe1", 500.0, 12345);
     Account acc2("USD", "John Doe1", 1000.0, 67890);
@@ -16,6 +17,7 @@ int main() {
 
     // Create a customer
     Customer customer1("John Doe1","1019", "1234567890");
+
     Customer customer2("John Doe1","1020", "1234567890");
 
 

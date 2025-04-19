@@ -34,7 +34,7 @@ public:
     bool getIsLoggedIn() const;
     
     // Display menu options specific to user type
-    virtual void displayMenu() const = 0; // Pure virtual function
+
 };
 
 // Derived Administrator class
@@ -53,8 +53,6 @@ public:
     void modifySystemSettings() const;
     bool resetUserPassword(const std::string& userId, const std::string& newPassword);
     
-    // Override display menu
-    void displayMenu() const override;
 };
 
 // Derived Customer class
@@ -101,7 +99,6 @@ public:
 
     Account& getAccountWithID(int accID);
 
-    void displayMenu() const override;
 
 };
 

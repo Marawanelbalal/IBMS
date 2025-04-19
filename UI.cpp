@@ -98,6 +98,8 @@ using namespace std;
         cout << "   Password: ";
         string password = getTextInput();
 
+
+
         // simulate a successful login. kindly replace it with the real data after made the admin class, bro.
         if (username == "admin" || username == "ADMIN" && password == "202400993+") {
             loggedIn = true;
@@ -105,7 +107,10 @@ using namespace std;
             currentUsername = username;
             displaySuccess("   Login successful as an Administrator");
         }
-        else if (username == "customer" || "CUSTOMER" && password == "202400993-") {
+
+
+
+        else if (username == "customer" || username == "CUSTOMER" && password == "202400993-") {
             loggedIn = true;
             currentUserRole = "Customer";
             currentUsername = username;
@@ -147,6 +152,7 @@ using namespace std;
         else {
             // kindly make the entered data be changed with your code.
             displaySuccess("   Registration successful! Welcome to our great Islamic Bank.");
+
         }
 
         waitForEnter();
