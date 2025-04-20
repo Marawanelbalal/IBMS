@@ -127,6 +127,8 @@ string Customer::getAddress() { return address; }
 
 int Customer::getPhoneNumber() { return phoneNumber; }
 
+string Customer::getPassword() { return password; }
+
 void Customer::setAccounts(vector<Account> Accounts) {
 	this->Accounts = Accounts;
 }

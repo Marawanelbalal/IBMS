@@ -75,6 +75,8 @@ public:
 
     Customer(const std::string& userName,const std::string& id, const std::string& pwd);
 
+    string getPassword();
+
     string getName();
 
     string getAddress();

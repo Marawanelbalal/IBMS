@@ -2,8 +2,11 @@
 #include <iostream>
 using namespace std;
 
-class UI {
+class Bank;
+class Customer;
 
+class UI {
+	Bank* IBMS;
 	bool loggedIn = false;
 	string currentUserRole = "";
 	string currentUsername = "";
@@ -12,7 +15,12 @@ class UI {
 	double getDoubleInput() const;
 	string getTextInput() const;
 public:
-	UI() = default;
+	UI();
+	~UI();
+	Customer* getCurrentCustomer();
+	Customer* currentCustomer;
+	int generateUniqueAccountId();
+	void initializeBank();
 	void clearScreen() const;
 	void displayHeader() const;
 	void displayWelcome() const;

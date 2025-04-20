@@ -4,13 +4,19 @@
 #include <ctime>
 #include "Deposit.h"
 #include "Withdraw.h"
+#include "UI.h"
 
 Bank::Bank(UI* display) {
     // Initialize random seed for account ID generation
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     this->display = display;
 }
+Bank::Bank() {
+    // Initialize random seed for account ID generation
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+}
 
+map<int, Account> Bank::getAccounts() { return accounts; }
 
 Bank::~Bank() {
     // Clean up dynamically allocated User objects
@@ -18,6 +24,7 @@ Bank::~Bank() {
         delete pair.second;
     }
 }
+map<std::string, Customer> Bank::getCustomers() { return customers; }
 
 int Bank::generateUniqueAccountId() {
     // Generate a random 5-digit account ID
@@ -158,9 +165,8 @@ bool Bank::resetUserPassword(const std::string& userId, const std::string& newPa
     return success;
 }
 
-bool Bank::createAccount(const std::string& currency, const std::string& ownerName, float initialBalance) {
+bool Bank::createAccount(const std::string& currency, const std::string& ownerName, float initialBalance, int accountId) {
     // Generate a unique account ID
-    int accountId = generateUniqueAccountId();
 
     // Create the account
     Account newAccount(currency, ownerName, initialBalance, accountId);
@@ -264,9 +270,12 @@ void Bank::initializeDemoData() {
     addUser("1020", "John Doe2", "password2", "customer");
 
     // Create accounts
-    createAccount("USD", "John Doe1", 500.0);
-    createAccount("USD", "John Doe1", 500.0);
-    createAccount("USD", "John Doe2", 100.0);
+    int ID1 = generateUniqueAccountId();
+    int ID2 = generateUniqueAccountId();
+    int ID3 = generateUniqueAccountId();
+    createAccount("USD", "John Doe1", 500.0,ID1);
+    createAccount("USD", "John Doe1", 500.0,ID2);
+    createAccount("USD", "John Doe2", 100.0,ID3);
 
     // Add accounts to customers (assuming account IDs are as created)
     // In a real system, you would store the account IDs when created

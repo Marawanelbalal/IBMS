@@ -4,12 +4,40 @@
 #include <iomanip>
 #include <cstdlib>
 #include "UI.h"
+#include "Bank.h"
+#include "Deposit.h"
+
 using namespace std;
 
-
+    
     bool loggedIn = false;
     string currentUserRole = "";
     string currentUsername = "";
+    UI::UI() : IBMS(nullptr) {};
+    UI::~UI() {
+        if (IBMS != nullptr) delete IBMS;
+    }
+    void UI::initializeBank() {
+        if (IBMS == nullptr) {
+            IBMS = new Bank(this);
+        }
+        
+    }
+    Customer* UI::getCurrentCustomer() {
+        map<std::string, Customer> customers = IBMS->getCustomers();
+        Customer* currentCustomer = new Customer(customers[currentUsername]);
+        return currentCustomer;
+    }
+    int UI::generateUniqueAccountId() {
+        // Generate a random 5-digit account ID
+        map<int, Account> accounts = IBMS->getAccounts();
+        int accountId;
+        do {
+            accountId = 10000 + std::rand() % 90000;
+        } while (accounts.find(accountId) != accounts.end()); // Ensure it's unique
+
+        return accountId;
+    }
 
     // Helper methods
     void UI::waitForEnter() const {
@@ -64,7 +92,7 @@ using namespace std;
         cout << "                                       **                         ISLAMIC BANK                            **\n";
         cout << "                                       **                [With us do NOT be worry FOREVER]                **\n";
         cout << "                                       **-----------------------------------------------------------------**\n";
-        cout << "                                       **     This program devoloped by Moatasem and Marawan till now.    **\n";
+        cout << "                                       **     This program is just a work in progress till now. (Phase2)  **\n";
         cout << "                                       **-----------------------------------------------------------------**\n";
     }
 
@@ -110,16 +138,23 @@ using namespace std;
 
 
 
-        else if (username == "customer" || username == "CUSTOMER" && password == "202400993-") {
-            loggedIn = true;
-            currentUserRole = "Customer";
-            currentUsername = username;
-            displaySuccess("   Login successful as a Customer");
-        }
         else {
-            displayError("   Invalid username or password");
-        }
+            map<std::string, Customer> currentCustomers = IBMS->getCustomers();
 
+            if  (currentCustomers.count(username) > 0) {
+                Customer selectedCustomer = currentCustomers[username];
+                if (selectedCustomer.getPassword() == password) {
+                    loggedIn = true;
+                    currentUserRole = "Customer";
+                    currentUsername = username;
+                    displaySuccess("   Login successful as a Customer");
+                }
+                else { displayError("   Invalid Username/Password"); }
+            }
+            else {
+                displayError("   Invalid Username");
+            }
+        }
         waitForEnter();
     }
 
@@ -150,8 +185,10 @@ using namespace std;
             displayError("   Passwords do not match!");
         }
         else {
-            // kindly make the entered data be changed with your code.
             displaySuccess("   Registration successful! Welcome to our great Islamic Bank.");
+            string userID = to_string(generateUniqueAccountId());
+     
+            IBMS->addUser(userID, username, password, "customer");
 
         }
 
@@ -253,12 +290,35 @@ using namespace std;
         cout << "   5. AED (UAE Dirham)\n";
         cout << "   Enter your choice: ";
         int currency = getIntInput();
-
+        string currencystr;
+        switch (currency) {
+        case 1:
+            currencystr = "USD";
+            break;
+        case 2:
+            currencystr = "EUR";
+            break;
+        case 3:
+            currencystr = "GBP";
+            break;
+        case 4:
+            currencystr = "LE";
+            break;
+        case 5:
+            currencystr = "AED";
+            break;
+        default:
+            displayError("Invalid Currency");
+            break;
+        }
         cout << "   Initial Deposit Amount: ";
         double initialAmount = getDoubleInput();
-
         // make this create a real account.
         displaySuccess("Account created successfully!");
+        currentCustomer = getCurrentCustomer();
+        int accountID = generateUniqueAccountId();
+        IBMS->createAccount(currencystr, currentUsername, initialAmount,accountID);
+        IBMS->addAccountToCustomer(accountID, currentUsername);
         cout << "   Account Details:\n";
         cout << "   Account Number: " << 1000000 + rand() % 9000000 << "\n";
         cout << "   Account Type: "
@@ -286,6 +346,8 @@ using namespace std;
         // make this process a real deposit.
         displaySuccess("   Deposit completed successfully!");
         cout << "   Amount " << fixed << setprecision(2) << amount << " deposited to account #" << accountNumber << "\n";
+        Account* selectedAccount = IBMS->getAccountById(accountNumber);
+        Deposit D;
 
         waitForEnter();
     }
@@ -520,16 +582,20 @@ using namespace std;
             else if (currentUserRole == "Customer") {
                 // Customer menu choices
                 switch (choice) {
-                case 1: // View My Accounts
+                case 1: { // View My Accounts
                     displayMessage("Viewing your accounts...");
+                    currentCustomer = getCurrentCustomer();
+                    currentCustomer->viewOwnAccounts();
                     waitForEnter();
                     break;
+                }
                 case 2: // Create New Account
                     showAccountCreationScreen();
                     break;
-                case 3: // Deposit Money
+                case 3: { // Deposit Money
                     showDepositScreen();
                     break;
+                }
                 case 4: // Withdraw Money
                     showWithdrawalScreen();
                     break;
@@ -554,7 +620,7 @@ using namespace std;
                     displayMessage("Performing currency exchange...");
                     waitForEnter();
                     break;
-                case 99: // Logout
+                case 99: // Logout2
                     logout();
                     break;
                 case 0: // Exit
@@ -569,8 +635,4 @@ using namespace std;
             } while (choice != 0);
         }
 
-    //int main() {
-    //    UI bankUI;
-    //    bankUI.run();
-    //    return 0;
-    //}
+  
