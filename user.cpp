@@ -5,8 +5,6 @@
 #include <stdexcept>
 #include "Account.h"
 #include "user.h"
-#include "Deposit.h"
-#include "Withdraw.h"
 
 // User base class implementation
 User::User() {

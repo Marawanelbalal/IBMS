@@ -2,8 +2,6 @@
 #include <iostream>
 #include <random>
 #include <ctime>
-#include "Deposit.h"
-#include "Withdraw.h"
 #include "UI.h"
 
 Bank::Bank(UI* display) {

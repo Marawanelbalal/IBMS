@@ -128,28 +128,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Account.cpp" />
-    <ClCompile Include="BalanceInquiry.cpp" />
     <ClCompile Include="Bank.cpp" />
-    <ClCompile Include="Customer.cpp" />
-    <ClCompile Include="Deposit.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="operation.cpp" />
     <ClCompile Include="transaction.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="user.cpp" />
-    <ClCompile Include="Withdraw.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Account.h" />
-    <ClInclude Include="BalanceInquiry.h" />
     <ClInclude Include="Bank.h" />
-    <ClInclude Include="Customer.h" />
-    <ClInclude Include="Deposit.h" />
     <ClInclude Include="operation.h" />
     <ClInclude Include="transaction.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="user.h" />
-    <ClInclude Include="Withdraw.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitattributes" />
