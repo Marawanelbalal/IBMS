@@ -5,6 +5,9 @@
 #include <ctime>
 
 // Base Operation implementation
+Operation::Operation(){
+
+}
 Operation::Operation(const std::string& id, const std::string& type)
     : operationID(id), operationType(type), successful(false) {
     timestamp = std::time(nullptr);
@@ -336,4 +339,86 @@ void TransactionHistoryOperation::setDateRange(std::time_t start, std::time_t en
 
 void TransactionHistoryOperation::setTransactionType(const std::string& type) {
     transactionType = type;
+}
+
+
+void Deposit::loadParameters(Customer* currentCustomer,Account* acc, float amount) {
+    this->currentCustomer = currentCustomer;
+    this->acc = acc;
+    this->amount = amount;
+}
+
+bool Deposit::execute() {
+    //Check if the given amount is positive or not first
+    //Note: All instances of cout should be replaced by 'UI CLASS' functions.
+    if (not validate()) return false;
+    if (amount > 0) {
+        acc->addAmount(amount);
+        message = "Successfully deposited: " + to_string(amount) + " into account: " + to_string(acc->getAccountNumber()) + ". New balance: " + to_string(acc->getBalance()) + "\n";
+        cout << message;
+        return true;
+    }
+    else { cout << "Given amount must be positive" << endl; return false; }
+
+}
+bool Deposit::validate() {
+    vector<Account*> currentAccounts = currentCustomer->getAccounts();
+    for (Account* account : currentAccounts) {
+        if (account == acc) { return true; }
+    }
+    return false;
+}
+void Withdraw::loadParameters(Customer* currentCustomer, Account* acc, float amount){
+    this->currentCustomer = currentCustomer;
+    this->acc = acc;
+    this->amount = amount;
+}
+bool Withdraw::validate() {
+    vector<Account*> currentAccounts = currentCustomer->getAccounts();
+    for (Account* account : currentAccounts) {
+        if (account == acc) { return true; }
+    }
+    return false;
+}
+bool Withdraw::execute() {
+    if (not validate()) return false;
+    if (amount <= 0) {
+        message = "Amount must be a positive number";
+        cout << message;
+        return false;
+    } //Check if the given amount is positive or not first
+
+    else {
+
+        //Next, check if the user has enough balance in their account
+        //Note: All instances of cout should be replaced with 'UI CLASS' functions
+
+        if (acc->getBalance() < amount) {
+            message = "Couldn't withdraw amount: " + to_string(amount) + " from account: " + to_string(acc->getAccountNumber()) + "with a balance of: " + to_string(acc->getBalance());
+            cout << message;
+            return false;
+        }
+
+        else {
+            acc->subtractAmount(amount);
+            message = "Successfully withdrew " + to_string(amount) + " from account " + to_string(acc->getAccountNumber()) + ". New balance: " + to_string(acc->getBalance()) + "\n";
+            cout << message;
+            return true;
+        }
+
+    }
+
+
+}
+void BalanceInquiry::loadParameter(Account* acc) {
+    this->acc = acc;
+}
+bool BalanceInquiry::execute() {
+    message = "The balance for account: " + to_string(acc->getAccountNumber()) + " is: " + to_string(acc->getBalance()) + " " + acc->getCurrency() + "\n";
+    cout << message;
+    //display.displayMessage(message);
+    return true;
+}
+bool BalanceInquiry::validate() {
+    return true;
 }

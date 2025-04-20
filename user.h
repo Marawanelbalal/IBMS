@@ -1,9 +1,7 @@
 #pragma once
-#pragma once
 #include <vector>
 #include <string>
 #include "Account.h"
-#include "UI.h"
 
 class User {
 protected:
@@ -59,11 +57,10 @@ public:
 
 class Customer : public User
 {
-    UI display;
 
     string message;
 
-    vector<Account> Accounts;
+    vector<Account*> Accounts;
 
     string address;
 
@@ -83,7 +80,7 @@ public:
 
     int getPhoneNumber();
 
-    vector<Account> getAccounts();
+    vector<Account*> getAccounts();
 
     void updateContactInfo(string address, int PhoneNumber);
 
@@ -95,11 +92,11 @@ public:
 
     void viewTransactionHistory();
 
-    void addAccount(Account& acc);
+    void addAccount(Account* acc);
 
-    void setAccounts(vector<Account> Account);
+    void setAccounts(vector<Account*> Account);
 
-    Account& getAccountWithID(int accID);
+    Account* getAccountWithID(int accID);
 
 
 };

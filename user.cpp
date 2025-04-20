@@ -129,10 +129,10 @@ int Customer::getPhoneNumber() { return phoneNumber; }
 
 string Customer::getPassword() { return password; }
 
-void Customer::setAccounts(vector<Account> Accounts) {
+void Customer::setAccounts(vector<Account*> Accounts) {
 	this->Accounts = Accounts;
 }
-vector<Account> Customer::getAccounts() { return Accounts; }
+vector<Account*> Customer::getAccounts() { return Accounts; }
 //Store accounts in a vector.
 
 
@@ -140,17 +140,20 @@ void Customer::viewOwnAccounts() {
 	//First check if the customer has any accounts
 	if (Accounts.empty()) {
 		message = "User does not own any accounts to show.";
-		display.displayError(message);
+		cout << message;
+		//display.displayError(message);
 		return;
 	}
 	else {
 		message = "For Customer: " + name + "\n" + "The available accounts are: " + "\n";
-		display.displayMessage(message);
+		cout << message;
+		//display.displayMessage(message);
 		//Loop through the accounts vector using this format: for(type iterator : vector)
 		//Use a reference (Account&) instead of the actual class, since classes are not easy to handle like primitive data types.
-		for (const Account& acc : Accounts) {
-			message = to_string(acc.getAccountNumber()) + " : " + to_string(acc.getBalance()) + " " + acc.getCurrency() + "\n";
-			display.displayMessage(message);
+		for (const Account* acc : Accounts) {
+			message = to_string(acc->getAccountNumber()) + " : " + to_string(acc->getBalance()) + " " + acc->getCurrency() + "\n";
+			cout << message;
+			//display.displayMessage(message);
 		}
 		return;
 	}
@@ -169,21 +172,24 @@ void Customer::transferMoney(Account& acc1, Account& acc2, Customer& recipient, 
 	// Assuming Account::operator== is defined and compares account numbers
 	if (acc1 == acc2) {
 		message = "Can't transfer from an account to the same account.";
-		display.displayError(message);
+		cout << message;
+		//display.displayError(message);
 		return;
 	}
 
 	//Check if the given amount is valid
 	if (amount <= 0) {
 		message = "Error! Given amount must be a positive number";
-		display.displayError(message);
+		cout << message;
+		//display.displayError(message);
 		return;
 	}
 
 	//Check if acc1 has enough balance for the transaction
 	if (amount > acc1.getBalance()) {
 		message = "Error! Not enough balance to complete the transaction";
-		display.displayError(message);
+		cout << message;
+		//display.displayError(message);
 		return;
 	}
 
@@ -244,7 +250,8 @@ void Customer::transferMoney(Account& acc1, Account& acc2, Customer& recipient, 
 	message = "Successfully transferred " + std::to_string(amount) + " from account: " + std::to_string(acc1.getAccountNumber()) + " to account: " + std::to_string(acc2.getAccountNumber()) + "\n";
 	message += "Current balance for account: " + std::to_string(acc1.getAccountNumber()) + " is: " + std::to_string(acc1.getBalance()) + "\n";
 	message += "Current balance for account: " + std::to_string(acc2.getAccountNumber()) + " is: " + std::to_string(acc2.getBalance()) + "\n";
-	display.displaySuccess(message);
+	cout << message;
+	//display.displaySuccess(message);
 
 	// Transaction logging (assuming it's working correctly)
 	std::vector<std::string> AccountNumbers;
@@ -281,22 +288,23 @@ void Customer::transferMoney(Account& acc1, Account& acc2, Customer& recipient, 
 void Customer::viewTransactionHistory() {
 	if (Customer::Accounts.empty()) {
 		message = "User does not own any accounts to show transactions from.";
-		display.displayError(message);
+		cout << message;
 		return;
 	}
 	else {
 		message = "For Customer: " + name + "\n" + "The past transactions are: " + "\n";
-		display.displayMessage(message);
-		for (Account& acc : Accounts)
-			acc.viewTransactionsHistory();
+		cout << message;
+		//display.displayMessage(message);
+		for (Account* acc : Accounts)
+			acc->viewTransactionsHistory();
 	}
 }
 
-void Customer::addAccount(Account& acc) { Accounts.push_back(acc); }
+void Customer::addAccount(Account* acc) { Accounts.push_back(acc); }
 
-Account& Customer::getAccountWithID(int accID) {
-	for (Account& acc : Accounts) {
-		if (acc.getAccountNumber() == accID) return acc;
+Account* Customer::getAccountWithID(int accID) {
+	for (Account* acc : Accounts) {
+		if (acc->getAccountNumber() == accID) return acc;
 	}
 	throw runtime_error("Account not found: " + to_string(accID));
 }

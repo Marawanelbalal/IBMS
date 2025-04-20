@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include "UI.h"
 #include "Bank.h"
-#include "Deposit.h"
+#include "operation.h"
 
 using namespace std;
 
@@ -13,7 +13,7 @@ using namespace std;
     bool loggedIn = false;
     string currentUserRole = "";
     string currentUsername = "";
-    UI::UI() : IBMS(nullptr) {};
+    UI::UI() : IBMS(nullptr){};
     UI::~UI() {
         if (IBMS != nullptr) delete IBMS;
     }
@@ -30,7 +30,7 @@ using namespace std;
     }
     int UI::generateUniqueAccountId() {
         // Generate a random 5-digit account ID
-        map<int, Account> accounts = IBMS->getAccounts();
+        map<int, Account*> accounts = IBMS->getAccounts();
         int accountId;
         do {
             accountId = 10000 + std::rand() % 90000;
@@ -344,10 +344,14 @@ using namespace std;
         double amount = getDoubleInput();
 
         // make this process a real deposit.
-        displaySuccess("   Deposit completed successfully!");
-        cout << "   Amount " << fixed << setprecision(2) << amount << " deposited to account #" << accountNumber << "\n";
+        
         Account* selectedAccount = IBMS->getAccountById(accountNumber);
-        Deposit D;
+        Depositer.loadParameters(currentCustomer,selectedAccount, amount);
+        if (Depositer.execute()) {
+            displaySuccess("   Deposit completed successfully!");
+            cout << "   Amount " << fixed << setprecision(2) << amount << " deposited to account #" << accountNumber << "\n";
+        }
+        else displayError("Customer does own account OR incorrect amount entered");
 
         waitForEnter();
     }
@@ -365,9 +369,13 @@ using namespace std;
         cout << "   Enter Withdrawal Amount: ";
         double amount = getDoubleInput();
 
-        // make this process a real withdrawal.
-        displaySuccess("   Withdrawal completed successfully!");
-        cout << "   Amount " << fixed << setprecision(2) << amount << " withdrawn from account #" << accountNumber << "\n";
+        selectedAccount = IBMS->getAccountById(accountNumber);
+        Withdrawer.loadParameters(currentCustomer,selectedAccount, amount);
+        if (Withdrawer.execute()) {
+            displaySuccess("   Withdrawal completed successfully!");
+            cout << "   Amount " << fixed << setprecision(2) << amount << " withdrawn from account #" << accountNumber << "\n";
+        }
+        else displayError("Customer does not own account OR Insufficient Balance OR incorrect amount entered");
 
         waitForEnter();
     }
@@ -421,9 +429,15 @@ using namespace std;
 
         cout << "   Enter Account Number: ";
         int accountNumber = getIntInput();
-
-        // transaction data
-
+        bool foundAccount = false;
+        vector<Account*> accounts = currentCustomer->getAccounts();
+        for (Account* acc : accounts) {
+            if (acc->getAccountNumber() == accountNumber) {
+                foundAccount = true;
+                acc->viewTransactionsHistory();
+            }
+        }
+        if (not foundAccount) displayError("Account not found.");
         waitForEnter();
     }
 

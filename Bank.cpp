@@ -16,11 +16,14 @@ Bank::Bank() {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 }
 
-map<int, Account> Bank::getAccounts() { return accounts; }
+map<int, Account*> Bank::getAccounts() { return accounts; }
 
 Bank::~Bank() {
     // Clean up dynamically allocated User objects
     for (auto& pair : users) {
+        delete pair.second;
+    }
+    for (auto& pair : accounts) {
         delete pair.second;
     }
 }
@@ -65,10 +68,10 @@ void Bank::viewAllAccounts() {
     display->displayMessage(message);
 
     for (const auto& pair : accounts) {
-        const Account& account = pair.second;
-        message = "Account ID: " + std::to_string(account.getAccountNumber()) +
-            ", Balance: " + std::to_string(account.getBalance()) +
-            " " + account.getCurrency();
+        Account* account = pair.second;
+        message = "Account ID: " + std::to_string(account->getAccountNumber()) +
+            ", Balance: " + std::to_string(account->getBalance()) +
+            " " + account->getCurrency();
         display->displayMessage(message);
     }
 }
@@ -172,7 +175,7 @@ bool Bank::createAccount(const std::string& currency, const std::string& ownerNa
     Account newAccount(currency, ownerName, initialBalance, accountId);
 
     // Add to accounts map
-    accounts[accountId] = newAccount;
+    accounts[accountId] = new Account(currency,ownerName,initialBalance,accountId);
 
     message = "Account created successfully. Account ID: " + std::to_string(accountId);
     display->displaySuccess(message);
@@ -229,8 +232,8 @@ bool Bank::transferMoney(const std::string& fromCustomerName, int fromAccountId,
     Account* toAccount = nullptr;
 
     try {
-        fromAccount = &fromCustomer->getAccountWithID(fromAccountId);
-        toAccount = &toCustomer->getAccountWithID(toAccountId);
+        fromAccount = fromCustomer->getAccountWithID(fromAccountId);
+        toAccount = toCustomer->getAccountWithID(toAccountId);
     }
     catch (const std::runtime_error& e) {
         message = e.what();
@@ -242,8 +245,8 @@ bool Bank::transferMoney(const std::string& fromCustomerName, int fromAccountId,
     fromCustomer->transferMoney(*fromAccount, *toAccount, *toCustomer, amount);
 
     // Update accounts in the map
-    accounts[fromAccountId] = *fromAccount;
-    accounts[toAccountId] = *toAccount;
+    accounts[fromAccountId] = fromAccount;
+    accounts[toAccountId] = toAccount;
 
     return true;
 }
@@ -259,7 +262,7 @@ Customer* Bank::getCustomerByName(const std::string& name) {
 Account* Bank::getAccountById(int accountId) {
     auto it = accounts.find(accountId);
     if (it != accounts.end()) {
-        return &it->second;
+        return it->second;
     }
     return nullptr;
 }
