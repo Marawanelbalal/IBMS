@@ -410,15 +410,24 @@ bool Withdraw::execute() {
 
 
 }
-void BalanceInquiry::loadParameter(Account* acc) {
+void BalanceInquiry::loadParameter(Customer* currentCustomer,Account* acc) {
+    this->currentCustomer = currentCustomer;
     this->acc = acc;
 }
 bool BalanceInquiry::execute() {
-    message = "The balance for account: " + to_string(acc->getAccountNumber()) + " is: " + to_string(acc->getBalance()) + " " + acc->getCurrency() + "\n";
-    cout << message;
-    //display.displayMessage(message);
-    return true;
+    if (validate()) {
+        message = "The balance for account: " + to_string(acc->getAccountNumber()) + " is: " + to_string(acc->getBalance()) + " " + acc->getCurrency() + "\n";
+        return true;
+    }
+    return false;
 }
 bool BalanceInquiry::validate() {
-    return true;
+    vector<Account*> currentAccounts = currentCustomer->getAccounts();
+    for (Account* account : currentAccounts) {
+        if (account == acc) { return true; }
+    }
+    return false;
+}
+string BalanceInquiry::getMessage() {
+    return message;
 }

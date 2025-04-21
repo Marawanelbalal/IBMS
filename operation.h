@@ -152,9 +152,11 @@ class BalanceInquiry : public Operation
 {
     Account* acc;
     string message;
+    Customer* currentCustomer;
 public:
-    void loadParameter(Account* acc);
+    void loadParameter(Customer* currentCustomer,Account* acc);
     bool execute() override;
     bool validate() override;
+    string getMessage();
 
 };

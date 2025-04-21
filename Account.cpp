@@ -34,7 +34,7 @@ void  Account::viewTransactionsHistory() {
     else {
         message = "For Account: " + to_string(accountId) + "\n" + "The past transactions are: " + "\n";
         cout << message;
-        //display.displayMessage(message);
+
         vector <string> involvedAccounts;
         double amount;
         for (const Transaction& Tran : Transactions) {

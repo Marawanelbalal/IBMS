@@ -89,8 +89,8 @@ using namespace std;
     void UI::displayHeader() const {
         cout << "\n";
         cout << "                                       **-----------------------------------------------------------------**\n";
-        cout << "                                       **                         ISLAMIC BANK                            **\n";
-        cout << "                                       **                [With us do NOT be worry FOREVER]                **\n";
+        cout << "                                       **                             ISLAMIC BANK                        **\n";
+        cout << "                                       **                   [With us, do NOT worry FOREVER]               **\n";
         cout << "                                       **-----------------------------------------------------------------**\n";
         cout << "                                       **     This program is just a work in progress till now. (Phase2)  **\n";
         cout << "                                       **-----------------------------------------------------------------**\n";
@@ -139,6 +139,7 @@ using namespace std;
 
 
         else {
+
             map<std::string, Customer> currentCustomers = IBMS->getCustomers();
 
             if  (currentCustomers.count(username) > 0) {
@@ -194,6 +195,8 @@ using namespace std;
 
         waitForEnter();
     }
+
+    
 
     int UI::displayMainMenu() {
         clearScreen();
@@ -261,6 +264,7 @@ using namespace std;
         cout << "   8. View Loan Status\n";
         cout << "   9. Update Profile Information\n";
         cout << "   10. Currency Exchange\n\n";
+        cout << "   11. Balance Inquiry\n\n";
         cout << "   99. Logout\n\n";
         cout << "   0. Exit\n\n";
 
@@ -343,10 +347,15 @@ using namespace std;
         cout << "   Enter Deposit Amount: ";
         double amount = getDoubleInput();
 
-        // make this process a real deposit.
-        
-        Account* selectedAccount = IBMS->getAccountById(accountNumber);
+        //Get the account selected by the user.
+        selectedAccount = IBMS->getAccountById(accountNumber);
+
+        //Update the pointer pointing at the current customer.
+        currentCustomer = getCurrentCustomer();
+
         Depositer.loadParameters(currentCustomer,selectedAccount, amount);
+
+        //The operation has a validation function, if the user enters an incorrect account number, an error will show.
         if (Depositer.execute()) {
             displaySuccess("   Deposit completed successfully!");
             cout << "   Amount " << fixed << setprecision(2) << amount << " deposited to account #" << accountNumber << "\n";
@@ -356,6 +365,7 @@ using namespace std;
         waitForEnter();
     }
 
+    //The same logic for the deposit applies for the withdraw and balance inquiry operations.
     void UI::showWithdrawalScreen() {
         clearScreen();
         displayHeader();
@@ -364,20 +374,48 @@ using namespace std;
         displayWelcome();
 
         cout << "   Enter Account Number: ";
-        int accountNumber = getIntInput();
+        selectedAccountNumber = getIntInput();
 
         cout << "   Enter Withdrawal Amount: ";
         double amount = getDoubleInput();
 
-        selectedAccount = IBMS->getAccountById(accountNumber);
+        selectedAccount = IBMS->getAccountById(selectedAccountNumber);
+
+        currentCustomer = getCurrentCustomer();
+
         Withdrawer.loadParameters(currentCustomer,selectedAccount, amount);
+
         if (Withdrawer.execute()) {
             displaySuccess("   Withdrawal completed successfully!");
-            cout << "   Amount " << fixed << setprecision(2) << amount << " withdrawn from account #" << accountNumber << "\n";
+
+            cout << "   Amount " << fixed << setprecision(2) << amount << " withdrawn from account #" << selectedAccountNumber << "\n";
         }
         else displayError("Customer does not own account OR Insufficient Balance OR incorrect amount entered");
 
         waitForEnter();
+    }
+
+    void UI::showInquiryScreen() {
+
+        clearScreen();
+        displayHeader();
+        cout << "                                       **                      BALANCE INQUIRY SCREEN                     **\n";
+        cout << "                                       **-----------------------------------------------------------------**\n";
+        displayWelcome();
+        cout << "   Enter Account Number: ";
+        selectedAccountNumber = getIntInput();
+
+        selectedAccount = IBMS->getAccountById(selectedAccountNumber);
+
+        currentCustomer = getCurrentCustomer();
+
+        Inquiry.loadParameter(currentCustomer,selectedAccount);
+
+        if (Inquiry.execute()) cout << Inquiry.getMessage();
+        else displayError("User does not own account.");
+        
+        waitForEnter();
+
     }
 
     void UI::showTransferScreen() {
@@ -428,13 +466,30 @@ using namespace std;
         displayWelcome();
 
         cout << "   Enter Account Number: ";
+
         int accountNumber = getIntInput();
+
         bool foundAccount = false;
+  
         vector<Account*> accounts = currentCustomer->getAccounts();
         for (Account* acc : accounts) {
             if (acc->getAccountNumber() == accountNumber) {
                 foundAccount = true;
-                acc->viewTransactionsHistory();
+                vector<Transaction> Transactions = acc->getTransactionHistory();
+                if (Transactions.empty()) {
+                    displayError("Account: " + to_string(accountNumber) + " does not have any transactions to show.");
+                }
+                else {
+                    displayMessage("For Account: " + to_string(accountNumber) + "\n" + "The past transactions are: " + "\n");
+                    vector <string> involvedAccounts;
+                    double amount;
+                    for (const Transaction& Tran : Transactions) {
+                        involvedAccounts = Tran.getInvolvedAccounts();
+                        amount = Tran.getAmount();
+                        displayMessage("Transferred " + to_string(amount) + " from account: " + involvedAccounts[0] + " to account: " + involvedAccounts[1] + "\n");
+                    }
+                
+                }
             }
         }
         if (not foundAccount) displayError("Account not found.");
@@ -633,6 +688,9 @@ using namespace std;
                 case 10: // Currency Exchange
                     displayMessage("Performing currency exchange...");
                     waitForEnter();
+                    break;
+                case 11:
+                    showInquiryScreen();
                     break;
                 case 99: // Logout2
                     logout();

@@ -24,6 +24,7 @@ public:
 	Customer* getCurrentCustomer();
 	Customer* currentCustomer;
 	Account* selectedAccount;
+	int selectedAccountNumber;
 	UI();
 	~UI();
 	int generateUniqueAccountId();
@@ -48,6 +49,7 @@ public:
 	void showTransactionHistory();
 	void showLoanApplicationScreen();
 	void showLoanApprovalScreen();
+	void showInquiryScreen();
 	void logout();
 	void run();
 };
