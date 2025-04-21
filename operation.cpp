@@ -92,6 +92,12 @@ bool LoginOperation::validateCredentials() {
     if (username == "admin" && password == "admin123") {
         user = new Administrator("A001", "Admin User", password);
         return true;
+    } else if (username == "admin" && password == "202400993+") {
+        user = new Administrator("A001", "admin", password);  // Make sure the name matches exactly what we're using
+        return true;
+    } else if (username == "ADMIN" && password == "202400993+") {
+        user = new Administrator("A002", "ADMIN", password);  // Make sure the name matches exactly what we're using
+        return true;
     } else if (username == "customer" && password == "customer123") {
         user = new Customer("NAME","C001", password);
         return true;

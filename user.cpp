@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include "Account.h"
 #include "user.h"
+#include "Bank.h"
 
 // User base class implementation
 User::User() {
@@ -40,6 +41,10 @@ bool User::changePassword(const std::string& oldPassword, const std::string& new
     return false;
 }
 
+std::string User::getPassword() const {
+    return password;
+}
+
 std::string User::getUserID() const {
     return userID;
 }
@@ -63,24 +68,25 @@ Administrator::Administrator(const std::string& id, const std::string& userName,
 
 bool Administrator::createUserAccount(const std::string& id, const std::string& name, 
                                      const std::string& password, const std::string& role) {
-    // Implementation would interact with a user repository
+    // This method would typically be connected to the Bank class
+    // For this implementation, we'll assume Bank is handling the actual user creation
     std::cout << "Created new user account: " << id << " with role: " << role << std::endl;
     return true;
 }
 
 bool Administrator::deleteUserAccount(const std::string& id) {
-    // Implementation would interact with a user repository
+    // This method would also be connected to the Bank class
     std::cout << "Deleted user account: " << id << std::endl;
     return true;
 }
 
 void Administrator::viewAllAccounts() const {
-    // Implementation would fetch and display all accounts from a repository
+    // This method would display all accounts from the bank
     std::cout << "Displaying all bank accounts..." << std::endl;
 }
 
 void Administrator::viewAllUsers() const {
-    // Implementation would fetch and display all users from a repository
+    // This method would display all users from the bank
     std::cout << "Displaying all system users..." << std::endl;
 }
 
@@ -95,11 +101,10 @@ void Administrator::modifySystemSettings() const {
 }
 
 bool Administrator::resetUserPassword(const std::string& userId, const std::string& newPassword) {
-    // Implementation would find user and reset their password
+    // This would be connected to the Bank class to update user password
     std::cout << "Reset password for user: " << userId << std::endl;
     return true;
 }
-
 
 Customer::Customer()
 {
@@ -110,8 +115,6 @@ Customer::Customer()
 Customer::Customer(const std::string& userName,const std::string& id, const std::string& pwd)
 	: User(id, userName, pwd, "customer"), phoneNumber(10040005000){
 }
-
-
 
 string Customer::getName() { return name; }
 
@@ -127,13 +130,10 @@ void Customer::setAccounts(vector<Account*> Accounts) {
 vector<Account*> Customer::getAccounts() { return Accounts; }
 //Store accounts in a vector.
 
-
-
 void Customer::updateContactInfo(string address, int phoneNumber) {
 	this->address = address;
 	this->phoneNumber = phoneNumber;
 }
-
 
 void Customer::transferMoney(Account& acc1, Account& acc2, Customer& recipient, float amount) {
 	//This should become its own functionality class.

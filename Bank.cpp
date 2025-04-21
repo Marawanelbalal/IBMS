@@ -149,21 +149,40 @@ bool Bank::resetUserPassword(const std::string& userId, const std::string& newPa
         return false;
     }
 
-    // For a real system, you would need to implement this in the User class
-    // This is a simplified version
-    Administrator admin("temp", "temp", "temp");
-    bool success = admin.resetUserPassword(userId, newPassword);
-
-    if (success) {
+    // Get the user and update their password directly
+    User* user = it->second;
+    std::string oldPassword = user->getPassword();
+    
+    // If this is a customer, we need to update the customer map as well
+    if (user->getRole() == "customer") {
+        std::string customerName = user->getName();
+        auto customerIt = customers.find(customerName);
+        if (customerIt != customers.end()) {
+            // Create a new customer with the new password
+            Customer updatedCustomer(customerName, userId, newPassword);
+            
+            // Copy over accounts from the original customer
+            updatedCustomer.setAccounts(customerIt->second.getAccounts());
+            
+            // Replace the customer in the map
+            customers[customerName] = updatedCustomer;
+        } else {
+            message = "Warning: Customer not found in customer map: " + customerName;
+            display->displayError(message);
+            // Don't return false, still try to update the User password
+        }
+    }
+    
+    // Change password in the User object
+    if (user->changePassword(oldPassword, newPassword)) {
         message = "Password reset successfully for user ID: " + userId;
         display->displaySuccess(message);
-    }
-    else {
+        return true;
+    } else {
         message = "Failed to reset password for user ID: " + userId;
         display->displayError(message);
+        return false;
     }
-
-    return success;
 }
 
 bool Bank::createAccount(const std::string& currency, const std::string& ownerName, float initialBalance, int accountId) {
@@ -296,4 +315,8 @@ void Bank::initializeDemoData() {
 
     message = "Demo data initialized successfully.";
     display->displaySuccess(message);
+}
+
+map<std::string, User*> Bank::getUsers() {
+    return users;
 }

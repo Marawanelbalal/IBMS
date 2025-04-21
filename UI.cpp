@@ -126,34 +126,47 @@ using namespace std;
         cout << "   Password: ";
         string password = getTextInput();
 
-
-
-        // simulate a successful login. kindly replace it with the real data after made the admin class, bro.
-        if (username == "admin" || username == "ADMIN" && password == "202400993+") {
+        // Admin login
+        if ((username == "admin" || username == "ADMIN") && password == "202400993+") {
             loggedIn = true;
             currentUserRole = "Administrator";
             currentUsername = username;
             displaySuccess("   Login successful as an Administrator");
         }
-
-
-
         else {
-
+            // Customer login
             map<std::string, Customer> currentCustomers = IBMS->getCustomers();
 
-            if  (currentCustomers.count(username) > 0) {
+            if (currentCustomers.count(username) > 0) {
                 Customer selectedCustomer = currentCustomers[username];
+                
                 if (selectedCustomer.getPassword() == password) {
                     loggedIn = true;
                     currentUserRole = "Customer";
                     currentUsername = username;
                     displaySuccess("   Login successful as a Customer");
                 }
-                else { displayError("   Invalid Username/Password"); }
+                else {
+                    displayError("   Invalid Username/Password");
+                }
             }
             else {
-                displayError("   Invalid Username");
+                // Try looking up in users map as well for redundancy
+                bool userFound = false;
+                for (const auto& pair : IBMS->getUsers()) {
+                    if (pair.second->getName() == username && pair.second->getPassword() == password) {
+                        loggedIn = true;
+                        currentUserRole = pair.second->getRole();
+                        currentUsername = username;
+                        displaySuccess("   Login successful as a " + currentUserRole);
+                        userFound = true;
+                        break;
+                    }
+                }
+                
+                if (!userFound) {
+                    displayError("   Invalid Username");
+                }
             }
         }
         waitForEnter();
@@ -519,7 +532,7 @@ using namespace std;
                 }
             }
         }
-        if (not foundAccount) displayError("Account not found.");
+        if (!foundAccount) displayError("Account not found.");
         waitForEnter();
     }
 
@@ -599,6 +612,140 @@ using namespace std;
         waitForEnter();
     }
 
+    void UI::showCreateUserScreen() {
+        clearScreen();
+        displayHeader();
+        cout << "                                       **                      CREATE USER ACCOUNT                         **\n";
+        cout << "                                       **-----------------------------------------------------------------**\n";
+        displayWelcome();
+
+        cout << "   Enter User ID: ";
+        string userId = getTextInput();
+
+        cout << "   Enter Full Name: ";
+        string fullName = getTextInput();
+
+        cout << "   Create Password: ";
+        string password = getTextInput();
+
+        cout << "   Select Role:\n";
+        cout << "   1. Administrator\n";
+        cout << "   2. Customer\n";
+        cout << "   Enter your choice: ";
+        int roleChoice = getIntInput();
+
+        string role = (roleChoice == 1) ? "admin" : "customer";
+
+        bool success = IBMS->addUser(userId, fullName, password, role);
+
+        if (success) {
+            displaySuccess("User account created successfully!");
+        } else {
+            displayError("Failed to create user account. User ID may already exist.");
+        }
+
+        waitForEnter();
+    }
+
+    void UI::showDeleteUserScreen() {
+        clearScreen();
+        displayHeader();
+        cout << "                                       **                      DELETE USER ACCOUNT                         **\n";
+        cout << "                                       **-----------------------------------------------------------------**\n";
+        displayWelcome();
+
+        // Show all users first to help the admin select the correct user
+        displayMessage("Current users in the system:");
+        IBMS->viewAllUsers();
+        
+        cout << "\n   Enter Username to delete: ";
+        string username = getTextInput();
+
+        if (username == currentUsername) {
+            displayError("You cannot delete your own account!");
+            waitForEnter();
+            return;
+        }
+
+        cout << "   Are you sure you want to delete user '" << username << "'? (y/n): ";
+        string confirmation = getTextInput();
+
+        if (confirmation == "y" || confirmation == "Y") {
+            bool success = IBMS->deleteUser(username);
+            
+            if (success) {
+                displaySuccess("User account deleted successfully!");
+            } else {
+                displayError("Failed to delete user account. User not found or could not be deleted.");
+            }
+        } else {
+            displayMessage("Operation cancelled.");
+        }
+
+        waitForEnter();
+    }
+
+    void UI::showViewAllAccountsScreen() {
+        clearScreen();
+        displayHeader();
+        cout << "                                       **                      ALL BANK ACCOUNTS                          **\n";
+        cout << "                                       **-----------------------------------------------------------------**\n";
+        displayWelcome();
+
+        IBMS->viewAllAccounts();
+        
+        waitForEnter();
+    }
+
+    void UI::showViewAllUsersScreen() {
+        clearScreen();
+        displayHeader();
+        cout << "                                       **                      ALL SYSTEM USERS                           **\n";
+        cout << "                                       **-----------------------------------------------------------------**\n";
+        displayWelcome();
+
+        IBMS->viewAllUsers();
+        
+        waitForEnter();
+    }
+
+    void UI::showResetPasswordScreen() {
+        clearScreen();
+        displayHeader();
+        cout << "                                       **                     RESET USER PASSWORD                         **\n";
+        cout << "                                       **-----------------------------------------------------------------**\n";
+        displayWelcome();
+
+        // Show all users first to help the admin select the correct user ID
+        displayMessage("Current users in the system:");
+        IBMS->viewAllUsers();
+        
+        cout << "\n   Enter User ID (not Username) to reset password for: ";
+        string userId = getTextInput();
+
+        cout << "   Enter New Password: ";
+        string newPassword = getTextInput();
+
+        cout << "   Confirm New Password: ";
+        string confirmPassword = getTextInput();
+
+        if (newPassword != confirmPassword) {
+            displayError("Passwords do not match!");
+            waitForEnter();
+            return;
+        }
+
+        bool success = IBMS->resetUserPassword(userId, newPassword);
+        
+        if (success) {
+            displaySuccess("Password reset successfully! User can now login with the new password.");
+        } else {
+            displayError("Failed to reset password. User ID not found.");
+        }
+
+        waitForEnter();
+    }
+
     // Main application loop
     void UI::run() {
         int choice;
@@ -626,20 +773,16 @@ using namespace std;
                 // Admin menu choices
                 switch (choice) {
                 case 1: // Create User Account
-                    displayMessage("Creating user account...");
-                    waitForEnter();
+                    showCreateUserScreen();
                     break;
                 case 2: // Delete User Account
-                    displayMessage("Deleting user account...");
-                    waitForEnter();
+                    showDeleteUserScreen();
                     break;
                 case 3: // View All Accounts
-                    displayMessage("Viewing all accounts...");
-                    waitForEnter();
+                    showViewAllAccountsScreen();
                     break;
                 case 4: // View All Users
-                    displayMessage("Viewing all users...");
-                    waitForEnter();
+                    showViewAllUsersScreen();
                     break;
                 case 5: // Generate Reports
                     displayMessage("Generating reports...");
@@ -650,8 +793,7 @@ using namespace std;
                     waitForEnter();
                     break;
                 case 7: // Reset User Password
-                    displayMessage("Resetting user password...");
-                    waitForEnter();
+                    showResetPasswordScreen();
                     break;
                 case 8: // Approve Loan Applications
                     showLoanApprovalScreen();

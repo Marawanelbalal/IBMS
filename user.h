@@ -30,6 +30,7 @@ public:
     std::string getName() const;
     std::string getRole() const;
     bool getIsLoggedIn() const;
+    std::string getPassword() const;
     
     // Display menu options specific to user type
 

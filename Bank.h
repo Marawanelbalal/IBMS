@@ -27,6 +27,7 @@ public:
     void viewAllUsers();
     map<int, Account*> getAccounts();
     map<std::string, Customer> getCustomers();
+    map<std::string, User*> getUsers();
     void viewAllAccounts();
     bool addUser(const std::string& id, const std::string& name, const std::string& password, const std::string& role);
     bool deleteUser(const std::string& userName);

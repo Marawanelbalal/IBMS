@@ -53,4 +53,11 @@ public:
 	void showUserAccounts();
 	void logout();
 	void run();
+
+	// Administrator-specific screens
+	void showCreateUserScreen();
+	void showDeleteUserScreen();
+	void showViewAllAccountsScreen();
+	void showViewAllUsersScreen();
+	void showResetPasswordScreen();
 };
