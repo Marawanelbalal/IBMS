@@ -1,7 +1,4 @@
 #pragma once 
-#ifndef OPERATION_H
-#define OPERATION_H
-
 #include <string>
 #include <ctime>
 #include "User.h"
@@ -20,6 +17,7 @@ protected:
 
 public:
     // Constructor
+    Operation();
     Operation(const std::string& id, const std::string& type);
     
     // Virtual destructor
@@ -123,6 +121,42 @@ public:
     std::vector<Transaction*> getTransactions() const;
     void setDateRange(std::time_t start, std::time_t end);
     void setTransactionType(const std::string& type);
+
+
+};
+class Deposit : public Operation
+{
+    string message;
+    Account* acc;
+    Customer* currentCustomer;
+    float amount;
+public:
+    void loadParameters(Customer* currentCustomer,Account* acc, float amount);
+    bool execute() override;
+    bool validate() override;
 };
 
-#endif // OPERATION_H
+class Withdraw : public Operation
+{
+    string message;
+    Account* acc;
+    float amount;
+    Customer* currentCustomer;
+public:
+    void loadParameters(Customer* currentCustomer,Account* acc, float amount);
+    bool execute() override;
+    bool validate() override;
+};
+
+class BalanceInquiry : public Operation
+{
+    Account* acc;
+    string message;
+    Customer* currentCustomer;
+public:
+    void loadParameter(Customer* currentCustomer,Account* acc);
+    bool execute() override;
+    bool validate() override;
+    string getMessage();
+
+};

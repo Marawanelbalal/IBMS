@@ -2,7 +2,6 @@
 
 #include <string>
 #include <vector>
-#include "UI.h"
 #include "transaction.h"
 
 
@@ -10,8 +9,6 @@ using namespace std;
 class Account
 {
     string owner;
-
-    UI display;
 
     string message;
 

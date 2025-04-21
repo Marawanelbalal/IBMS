@@ -18,18 +18,6 @@
     <ClCompile Include="Account.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Deposit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Withdraw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BalanceInquiry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Customer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="transaction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -51,18 +39,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Account.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Deposit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Withdraw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BalanceInquiry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Customer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="transaction.h">

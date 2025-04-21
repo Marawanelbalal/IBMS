@@ -1,8 +1,17 @@
 #pragma once
 #include <iostream>
+#include "operation.h"
+
 using namespace std;
 
+class Bank;
+class Account;
+
 class UI {
+	Bank* IBMS;
+	Withdraw Withdrawer;
+	Deposit Depositer;
+	BalanceInquiry Inquiry;
 
 	bool loggedIn = false;
 	string currentUserRole = "";
@@ -12,7 +21,14 @@ class UI {
 	double getDoubleInput() const;
 	string getTextInput() const;
 public:
-	UI() = default;
+	Customer* getCurrentCustomer();
+	Customer* currentCustomer;
+	Account* selectedAccount;
+	int selectedAccountNumber;
+	UI();
+	~UI();
+	int generateUniqueAccountId();
+	void initializeBank();
 	void clearScreen() const;
 	void displayHeader() const;
 	void displayWelcome() const;
@@ -33,6 +49,8 @@ public:
 	void showTransactionHistory();
 	void showLoanApplicationScreen();
 	void showLoanApprovalScreen();
+	void showInquiryScreen();
+	void showUserAccounts();
 	void logout();
 	void run();
 };

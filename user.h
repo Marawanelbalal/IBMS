@@ -1,9 +1,7 @@
 #pragma once
-#pragma once
 #include <vector>
 #include <string>
 #include "Account.h"
-#include "UI.h"
 
 class User {
 protected:
@@ -34,7 +32,7 @@ public:
     bool getIsLoggedIn() const;
     
     // Display menu options specific to user type
-    virtual void displayMenu() const = 0; // Pure virtual function
+
 };
 
 // Derived Administrator class
@@ -53,19 +51,16 @@ public:
     void modifySystemSettings() const;
     bool resetUserPassword(const std::string& userId, const std::string& newPassword);
     
-    // Override display menu
-    void displayMenu() const override;
 };
 
 // Derived Customer class
 
 class Customer : public User
 {
-    UI display;
 
     string message;
 
-    vector<Account> Accounts;
+    vector<Account*> Accounts;
 
     string address;
 
@@ -77,17 +72,17 @@ public:
 
     Customer(const std::string& userName,const std::string& id, const std::string& pwd);
 
+    string getPassword();
+
     string getName();
 
     string getAddress();
 
     int getPhoneNumber();
 
-    vector<Account> getAccounts();
+    vector<Account*> getAccounts();
 
     void updateContactInfo(string address, int PhoneNumber);
-
-    void viewOwnAccounts();
 
     void transferMoney(Account& acc1, Account& acc2, Customer& recipient, float amount);
 
@@ -95,13 +90,12 @@ public:
 
     void viewTransactionHistory();
 
-    void addAccount(Account& acc);
+    void addAccount(Account* acc);
 
-    void setAccounts(vector<Account> Account);
+    void setAccounts(vector<Account*> Account);
 
-    Account& getAccountWithID(int accID);
+    Account* getAccountWithID(int accID);
 
-    void displayMenu() const override;
 
 };
 
