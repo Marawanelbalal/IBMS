@@ -50,6 +50,7 @@ public:
 	void showLoanApplicationScreen();
 	void showLoanApprovalScreen();
 	void showInquiryScreen();
+	void showUserAccounts();
 	void logout();
 	void run();
 };

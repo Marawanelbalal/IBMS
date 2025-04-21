@@ -84,8 +84,6 @@ public:
 
     void updateContactInfo(string address, int PhoneNumber);
 
-    void viewOwnAccounts();
-
     void transferMoney(Account& acc1, Account& acc2, Customer& recipient, float amount);
 
     void requestNewAccount();

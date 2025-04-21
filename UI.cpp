@@ -418,6 +418,33 @@ using namespace std;
 
     }
 
+    void UI::showUserAccounts() {
+        clearScreen();
+        displayHeader();
+        cout << "                                       **                       USER ACCOUNTS SCREEN                      **\n";
+        cout << "                                       **-----------------------------------------------------------------**\n";
+        displayWelcome();
+
+        currentCustomer = getCurrentCustomer();
+
+        vector<Account*> Accounts = currentCustomer->getAccounts();
+
+        if (Accounts.empty()) {
+            displayError("User does not own any accounts to show.");
+        }
+        else {
+            displayMessage("For Customer: " + currentUsername + "\n" + "The available accounts are: " + "\n");
+            //Loop through the accounts vector using this format: for(type iterator : vector)
+            //Use a pointer (Account*) instead of the actual class, since objects are not easy to handle like primitive data types.
+
+            for (const Account* acc : Accounts) {
+            displayMessage(to_string(acc->getAccountNumber()) + " : " + to_string(acc->getBalance()) + " " + acc->getCurrency() + "\n");
+            }
+
+        }
+        waitForEnter();
+    }
+
     void UI::showTransferScreen() {
         clearScreen();
         displayHeader();
@@ -652,10 +679,7 @@ using namespace std;
                 // Customer menu choices
                 switch (choice) {
                 case 1: { // View My Accounts
-                    displayMessage("Viewing your accounts...");
-                    currentCustomer = getCurrentCustomer();
-                    currentCustomer->viewOwnAccounts();
-                    waitForEnter();
+                    showUserAccounts();
                     break;
                 }
                 case 2: // Create New Account

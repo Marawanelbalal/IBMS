@@ -128,31 +128,6 @@ vector<Account*> Customer::getAccounts() { return Accounts; }
 //Store accounts in a vector.
 
 
-void Customer::viewOwnAccounts() {
-	//This should be moved to the UI class later.
-	//First check if the customer has any accounts
-	if (Accounts.empty()) {
-		message = "User does not own any accounts to show.";
-		cout << message;
-		//display.displayError(message);
-		return;
-	}
-	else {
-		message = "For Customer: " + name + "\n" + "The available accounts are: " + "\n";
-		cout << message;
-		//display.displayMessage(message);
-		//Loop through the accounts vector using this format: for(type iterator : vector)
-		//Use a pointer (Account*) instead of the actual class, since objects are not easy to handle like primitive data types.
-
-		for (const Account* acc : Accounts) {
-			message = to_string(acc->getAccountNumber()) + " : " + to_string(acc->getBalance()) + " " + acc->getCurrency() + "\n";
-			cout << message;
-			//display.displayMessage(message);
-		}
-		return;
-	}
-
-}
 
 void Customer::updateContactInfo(string address, int phoneNumber) {
 	this->address = address;
