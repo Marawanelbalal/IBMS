@@ -7,6 +7,12 @@
 #include "user.h"
 #include "Deposit.h"
 #include "Withdraw.h"
+#include "Bank.h"
+#include <iomanip>
+#include <fstream>
+#include <sstream>
+#include <ctime>
+
 
 // User base class implementation
 User::User() {
