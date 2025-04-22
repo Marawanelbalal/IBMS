@@ -13,11 +13,11 @@ Transaction::Transaction(const std::string& id, double amt, const std::string& t
     
     // Generate a default description
     std::stringstream ss;
-    ss << type << " transaction of " << std::fixed << std::setprecision(2) << amount;
+    ss << type << " the transaction of " << std::fixed << std::setprecision(2) << amount;
     if (accounts.size() > 1) {
-        ss << " between accounts";
+        ss << " between accounts.";
     } else if (accounts.size() == 1) {
-        ss << " for account " << accounts[0];
+        ss << " for the account " << accounts[0];
     }
     description = ss.str();
 }
