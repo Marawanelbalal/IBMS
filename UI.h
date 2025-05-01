@@ -9,10 +9,6 @@ class Account;
 
 class UI {
 	Bank* IBMS;
-	Withdraw Withdrawer;
-	Deposit Depositer;
-	BalanceInquiry Inquiry;
-
 	bool loggedIn = false;
 	string currentUserRole = "";
 	string currentUsername = "";
@@ -27,7 +23,6 @@ public:
 	int selectedAccountNumber;
 	UI();
 	~UI();
-	int generateUniqueAccountId();
 	void initializeBank();
 	void clearScreen() const;
 	void displayHeader() const;

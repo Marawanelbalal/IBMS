@@ -219,7 +219,5 @@ Account* Customer::getAccountWithID(int accID) {
 	throw runtime_error("Account not found: " + to_string(accID));
 }
 
-void Customer::requestNewAccount() {
 
-}
 

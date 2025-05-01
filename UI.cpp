@@ -16,6 +16,7 @@ using namespace std;
     UI::UI() : IBMS(nullptr){};
     UI::~UI() {
         if (IBMS != nullptr) delete IBMS;
+
     }
     void UI::initializeBank() {
         if (IBMS == nullptr) {
@@ -27,16 +28,6 @@ using namespace std;
         map<std::string, Customer> customers = IBMS->getCustomers();
         Customer* currentCustomer = new Customer(customers[currentUsername]);
         return currentCustomer;
-    }
-    int UI::generateUniqueAccountId() {
-        // Generate a random 5-digit account ID
-        map<int, Account*> accounts = IBMS->getAccounts();
-        int accountId;
-        do {
-            accountId = 10000 + std::rand() % 90000;
-        } while (accounts.find(accountId) != accounts.end()); // Ensure it's unique
-
-        return accountId;
     }
 
     // Helper methods
@@ -200,7 +191,7 @@ using namespace std;
         }
         else {
             displaySuccess("   Registration successful! Welcome to our great Islamic Bank.");
-            string userID = to_string(generateUniqueAccountId());
+            string userID = to_string(IBMS->generateUniqueAccountId());
      
             IBMS->addUser(userID, username, password, "customer");
 
@@ -276,7 +267,7 @@ using namespace std;
         cout << "   7. Apply for Loan\n";
         cout << "   8. View Loan Status\n";
         cout << "   9. Update Profile Information\n";
-        cout << "   10. Currency Exchange\n\n";
+        cout << "   10. Currency Exchange\n";
         cout << "   11. Balance Inquiry\n\n";
         cout << "   99. Logout\n\n";
         cout << "   0. Exit\n\n";
@@ -333,7 +324,7 @@ using namespace std;
         // make this create a real account.
         displaySuccess("Account created successfully!");
         currentCustomer = getCurrentCustomer();
-        int accountID = generateUniqueAccountId();
+        int accountID = IBMS->generateUniqueAccountId();
         IBMS->createAccount(currencystr, currentUsername, initialAmount,accountID);
         IBMS->addAccountToCustomer(accountID, currentUsername);
         cout << "   Account Details:\n";
@@ -366,16 +357,20 @@ using namespace std;
         //Update the pointer pointing at the current customer.
         currentCustomer = getCurrentCustomer();
 
-        Depositer.loadParameters(currentCustomer,selectedAccount, amount);
+        Operation* Operator = new Deposit();
+
+        Operator->loadParameters(currentCustomer,selectedAccount, amount);
 
         //The operation has a validation function, if the user enters an incorrect account number, an error will show.
-        if (Depositer.execute()) {
+        if (Operator->execute()) {
             displaySuccess("   Deposit completed successfully!");
             cout << "   Amount " << fixed << setprecision(2) << amount << " deposited to account #" << accountNumber << "\n";
         }
-        else displayError("Customer does own account OR incorrect amount entered");
+        else displayError(Operator->getMessage());
 
         waitForEnter();
+        delete Operator;
+
     }
 
     //The same logic for the deposit applies for the withdraw and balance inquiry operations.
@@ -396,16 +391,19 @@ using namespace std;
 
         currentCustomer = getCurrentCustomer();
 
-        Withdrawer.loadParameters(currentCustomer,selectedAccount, amount);
+        Operation* Operator = new Withdraw();
 
-        if (Withdrawer.execute()) {
+        Operator->loadParameters(currentCustomer,selectedAccount, amount);
+
+        if (Operator->execute()) {
             displaySuccess("   Withdrawal completed successfully!");
 
             cout << "   Amount " << fixed << setprecision(2) << amount << " withdrawn from account #" << selectedAccountNumber << "\n";
         }
-        else displayError("Customer does not own account OR Insufficient Balance OR incorrect amount entered");
-
+        else displayError(Operator->getMessage());
         waitForEnter();
+        delete Operator;
+
     }
 
     void UI::showInquiryScreen() {
@@ -422,13 +420,15 @@ using namespace std;
 
         currentCustomer = getCurrentCustomer();
 
-        Inquiry.loadParameter(currentCustomer,selectedAccount);
+        Operation* Operator = new BalanceInquiry();
 
-        if (Inquiry.execute()) cout << Inquiry.getMessage();
+        Operator->loadParameters(currentCustomer,selectedAccount);
+
+        if (Operator->execute()) cout << Operator->getMessage();
         else displayError("User does not own account.");
         
         waitForEnter();
-
+        delete Operator;
     }
 
     void UI::showUserAccounts() {

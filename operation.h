@@ -4,11 +4,18 @@
 #include "User.h"
 #include "transaction.h"
 #include "Account.h"
+
 // #include "Account.h" // Assuming this exists based on project description
 
 // Base Operation class
 class Operation {
+
 protected:
+
+    std::string message;
+    Customer* currentCustomer = nullptr;
+    Account* acc = nullptr;
+    float amount = 0;
     std::string operationID;
     std::string operationType;
     std::time_t timestamp;
@@ -36,6 +43,12 @@ public:
     
     // Logging
     void logOperation() const;
+
+    bool accBelongsToCustomer();
+    void loadParameters(Customer* c, Account* a = nullptr, float amt = 0);
+
+    string getMessage();
+
 };
 
 // LoginOperation class
@@ -126,37 +139,23 @@ public:
 };
 class Deposit : public Operation
 {
-    string message;
-    Account* acc;
-    Customer* currentCustomer;
-    float amount;
 public:
-    void loadParameters(Customer* currentCustomer,Account* acc, float amount);
     bool execute() override;
     bool validate() override;
 };
 
 class Withdraw : public Operation
 {
-    string message;
-    Account* acc;
-    float amount;
-    Customer* currentCustomer;
 public:
-    void loadParameters(Customer* currentCustomer,Account* acc, float amount);
     bool execute() override;
     bool validate() override;
 };
 
 class BalanceInquiry : public Operation
 {
-    Account* acc;
-    string message;
-    Customer* currentCustomer;
+    
 public:
-    void loadParameter(Customer* currentCustomer,Account* acc);
     bool execute() override;
     bool validate() override;
-    string getMessage();
 
 };

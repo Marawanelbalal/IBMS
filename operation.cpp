@@ -44,6 +44,28 @@ void Operation::logOperation() const {
               << " | Message: " << statusMessage << std::endl;
 }
 
+string Operation::getMessage() {
+    return message;
+}
+bool Operation::accBelongsToCustomer() {
+    //The message is returned to the UI class to display it as the error message.
+
+    if (!currentCustomer || !acc) {
+        message = "Account does not belong to customer";
+        return false;
+    }
+    for (Account* account : currentCustomer->getAccounts()) {
+        if (account == acc) return true;
+    }
+    message = "Account does not belong to customer";
+    return false;
+}
+void Operation::loadParameters(Customer* customer, Account* account, float amt) {
+    currentCustomer = customer;
+    acc = account;
+    amount = amt;
+}
+
 // LoginOperation implementation
 LoginOperation::LoginOperation(const std::string& id, const std::string& uname, const std::string& pwd)
     : Operation(id, "Login"), username(uname), password(pwd), user(nullptr), failedAttempts(0) {
@@ -347,80 +369,73 @@ void TransactionHistoryOperation::setTransactionType(const std::string& type) {
     transactionType = type;
 }
 
-
-void Deposit::loadParameters(Customer* currentCustomer,Account* acc, float amount) {
-    this->currentCustomer = currentCustomer;
-    this->acc = acc;
-    this->amount = amount;
-}
+//Implementation of the Deposit functionality class.
 
 bool Deposit::execute() {
     //Check if the given amount is positive or not first
-    //Note: All instances of cout should be replaced by 'UI CLASS' functions.
-    if (not validate()) return false;
-    if (amount > 0) {
+    if (not validate()) {
+        return false;
+    }
+    else {
         acc->addAmount(amount);
-        message = "Successfully deposited: " + to_string(amount) + " into account: " + to_string(acc->getAccountNumber()) + ". New balance: " + to_string(acc->getBalance()) + "\n";
-        cout << message;
         return true;
     }
-    else { cout << "Given amount must be positive" << endl; return false; }
 
 }
 bool Deposit::validate() {
-    vector<Account*> currentAccounts = currentCustomer->getAccounts();
-    for (Account* account : currentAccounts) {
-        if (account == acc) { return true; }
-    }
-    return false;
-}
-void Withdraw::loadParameters(Customer* currentCustomer, Account* acc, float amount){
-    this->currentCustomer = currentCustomer;
-    this->acc = acc;
-    this->amount = amount;
-}
-bool Withdraw::validate() {
-    vector<Account*> currentAccounts = currentCustomer->getAccounts();
-    for (Account* account : currentAccounts) {
-        if (account == acc) { return true; }
-    }
-    return false;
-}
-bool Withdraw::execute() {
-    if (not validate()) return false;
-    if (amount <= 0) {
-        message = "Amount must be a positive number";
-        cout << message;
+    //The message is returned to the UI class to display it as the error message.
+    if (not accBelongsToCustomer()) {
         return false;
-    } //Check if the given amount is positive or not first
-
-    else {
-
-        //Next, check if the user has enough balance in their account
-        //Note: All instances of cout should be replaced with 'UI CLASS' functions
-
-        if (acc->getBalance() < amount) {
-            message = "Couldn't withdraw amount: " + to_string(amount) + " from account: " + to_string(acc->getAccountNumber()) + "with a balance of: " + to_string(acc->getBalance());
-            cout << message;
+    }
+    else if (amount <= 0) {
+            message = "Amount must be a positive number";
             return false;
         }
+    return true;
+    }
 
+
+
+
+//Implementation of the Withdraw functionality class.
+
+bool Withdraw::validate() {
+    //The message is returned to the UI class to display it as the error message.
+
+    if (not accBelongsToCustomer()) {
+        return false;
+    }
+    else {
+        if (amount <= 0) {
+            message = "Amount must be a positive number";
+            return false;
+        }
         else {
+            if (acc->getBalance() < amount) {
+                message = "Couldn't withdraw amount: " + to_string(amount) + " from account: " + to_string(acc->getAccountNumber()) + " with a balance of: " + to_string(acc->getBalance());
+                return false;
+            }
+        }
+    }
+    return true;
+}
+bool Withdraw::execute() {
+    if (not validate()) {
+        return false;
+    }
+    else {
             acc->subtractAmount(amount);
-            message = "Successfully withdrew " + to_string(amount) + " from account " + to_string(acc->getAccountNumber()) + ". New balance: " + to_string(acc->getBalance()) + "\n";
-            cout << message;
             return true;
         }
 
-    }
+}
 
 
-}
-void BalanceInquiry::loadParameter(Customer* currentCustomer,Account* acc) {
-    this->currentCustomer = currentCustomer;
-    this->acc = acc;
-}
+//Implementation of the Balance Inquiry functionality class.
+
 bool BalanceInquiry::execute() {
+    //The message is returned to the UI class to display it as the error message.
+
     if (validate()) {
         message = "The balance for account: " + to_string(acc->getAccountNumber()) + " is: " + to_string(acc->getBalance()) + " " + acc->getCurrency() + "\n";
         return true;
@@ -428,12 +443,6 @@ bool BalanceInquiry::execute() {
     return false;
 }
 bool BalanceInquiry::validate() {
-    vector<Account*> currentAccounts = currentCustomer->getAccounts();
-    for (Account* account : currentAccounts) {
-        if (account == acc) { return true; }
-    }
-    return false;
+    return accBelongsToCustomer();
 }
-string BalanceInquiry::getMessage() {
-    return message;
-}
+
