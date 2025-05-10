@@ -1,0 +1,14 @@
+Customer|m|32527|m|1450070408
+Account|29895|1|USD
+EndAccount
+Account|11723|1|USD
+EndAccount
+Account|25986|1|USD
+EndAccount
+EndCustomer
+Customer|y|29835|y|1450070408
+Account|18373|1|USD
+EndAccount
+Account|41713|1|USD
+EndAccount
+EndCustomer

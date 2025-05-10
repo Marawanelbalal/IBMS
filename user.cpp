@@ -112,9 +112,10 @@ Customer::Customer()
 	address = "Unknown";
 	phoneNumber = 1040440440;
 }
-Customer::Customer(const std::string& userName,const std::string& id, const std::string& pwd)
+Customer::Customer(const std::string& userName,const std::string& id, const std::string& pwd, const std::string& phoneNumber)
 	: User(id, userName, pwd, "customer"), phoneNumber(10040005000){
 }
+
 
 string Customer::getName() { return name; }
 

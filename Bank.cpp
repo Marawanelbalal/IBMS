@@ -14,7 +14,13 @@ Bank::Bank() {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 }
 
+
+
 map<int, Account*> Bank::getAccounts() { return accounts; }
+
+void Bank::setCustomers(std::map<std::string, Customer>& customers) {
+    this->customers = customers;
+}
 
 Bank::~Bank() {
     // Clean up dynamically allocated User objects
@@ -25,7 +31,9 @@ Bank::~Bank() {
         delete pair.second;
     }
 }
-map<std::string, Customer> Bank::getCustomers() { return customers; }
+map<std::string, Customer>& Bank::getCustomers() {
+    return customers;
+}
 
 int Bank::generateUniqueAccountId() {
     // Generate a random 5-digit account ID
@@ -74,7 +82,7 @@ void Bank::viewAllAccounts() {
     }
 }
 
-bool Bank::addUser(const std::string& id, const std::string& name, const std::string& password, const std::string& role) {
+bool Bank::addUser(const std::string& id, const std::string& name, const std::string& password, const std::string& role, const std::string& phoneNumber) {
     // Check if user ID already exists
     if (users.find(id) != users.end()) {
         message = "User ID already exists: " + id;
@@ -88,7 +96,7 @@ bool Bank::addUser(const std::string& id, const std::string& name, const std::st
         newUser = new Administrator(id, name, password);
     }
     else if (role == "customer") {
-        newUser = new Customer(name, id, password);
+        newUser = new Customer(name, id, password,phoneNumber);
 
         // Also add to customers map if it's a customer
         customers[name] = *dynamic_cast<Customer*>(newUser);
@@ -140,7 +148,7 @@ bool Bank::deleteUser(const std::string& userName) {
     return true;
 }
 
-bool Bank::resetUserPassword(const std::string& userId, const std::string& newPassword) {
+bool Bank::resetUserPassword(const std::string& userId, const std::string& newPassword,const std::string& newPhoneNumber) {
     // Find user by ID
     auto it = users.find(userId);
     if (it == users.end()) {
@@ -159,7 +167,7 @@ bool Bank::resetUserPassword(const std::string& userId, const std::string& newPa
         auto customerIt = customers.find(customerName);
         if (customerIt != customers.end()) {
             // Create a new customer with the new password
-            Customer updatedCustomer(customerName, userId, newPassword);
+            Customer updatedCustomer(customerName, userId, newPassword,newPhoneNumber);
             
             // Copy over accounts from the original customer
             updatedCustomer.setAccounts(customerIt->second.getAccounts());
@@ -185,14 +193,14 @@ bool Bank::resetUserPassword(const std::string& userId, const std::string& newPa
     }
 }
 
-bool Bank::createAccount(const std::string& currency, const std::string& ownerName, float initialBalance, int accountId) {
+bool Bank::createAccount(const std::string& currency, const std::string& ownerName, float initialBalance, int accountId, string accountType) {
     // Generate a unique account ID
 
     // Create the account
-    Account newAccount(currency, ownerName, initialBalance, accountId);
+    Account newAccount(currency, ownerName, initialBalance, accountId, accountType);
 
     // Add to accounts map
-    accounts[accountId] = new Account(currency,ownerName,initialBalance,accountId);
+    accounts[accountId] = new Account(currency,ownerName,initialBalance,accountId,accountType);
 
     message = "Account created successfully. Account ID: " + std::to_string(accountId);
     display->displaySuccess(message);
@@ -286,16 +294,16 @@ Account* Bank::getAccountById(int accountId) {
 
 void Bank::initializeDemoData() {
     // Create customers
-    addUser("1019", "John Doe1", "password1", "customer");
-    addUser("1020", "John Doe2", "password2", "customer");
+    addUser("1019", "John Doe1", "password1", "customer","010050502202");
+    addUser("1020", "John Doe2", "password2", "customer","010050502202");
 
     // Create accounts
     int ID1 = generateUniqueAccountId();
     int ID2 = generateUniqueAccountId();
     int ID3 = generateUniqueAccountId();
-    createAccount("USD", "John Doe1", 500.0,ID1);
-    createAccount("USD", "John Doe1", 500.0,ID2);
-    createAccount("USD", "John Doe2", 100.0,ID3);
+    createAccount("USD", "John Doe1", 500.0,ID1,"Savings");
+    createAccount("USD", "John Doe1", 500.0,ID2,"Savings");
+    createAccount("USD", "John Doe2", 100.0,ID3,"Savings");
 
     // Add accounts to customers (assuming account IDs are as created)
     // In a real system, you would store the account IDs when created

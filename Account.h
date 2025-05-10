@@ -14,6 +14,8 @@ class Account
 
     string currency;
     
+    string accountType;
+    
     float balance;
     
     int accountId;
@@ -24,16 +26,19 @@ public:
 
     Account();
 
-    Account(string currency, string owner, float balance, int  accountId);
+    Account(string currency, string owner, double balance, int  accountId,string accountType);
     
     float getBalance() const;
 
     int getAccountNumber() const;
+    
+    string getOwner() const;
 
     vector<Transaction> getTransactionHistory() const;
 
-    void viewTransactionsHistory();
+    string getAccountType() const;
 
+    void viewTransactionsHistory();
 
     void addTransaction(Transaction T);
 

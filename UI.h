@@ -1,5 +1,7 @@
 #pragma once
 #include <iostream>
+#include <map>
+#include <string>
 #include "operation.h"
 
 using namespace std;
@@ -12,6 +14,7 @@ class UI {
 	bool loggedIn = false;
 	string currentUserRole = "";
 	string currentUsername = "";
+
 	void waitForEnter() const;
 	int getIntInput() const;
 	double getDoubleInput() const;
@@ -21,12 +24,15 @@ public:
 	Customer* currentCustomer;
 	Account* selectedAccount;
 	int selectedAccountNumber;
+	
 	UI();
 	~UI();
+	void load(std::map<std::string,Customer>& customers);
 	void initializeBank();
 	void clearScreen() const;
 	void displayHeader() const;
 	void displayWelcome() const;
+	Bank* getBank() const;
 	void displayMessage(const string& message) const;
 	void displayError(const string& message) const;
 	void displaySuccess(const string& message) const;

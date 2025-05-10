@@ -1,0 +1,17 @@
+Customer|m|33264|m|1450070408
+Account|USD|m|1|27210|Savings Account
+EndAccount
+Account|USD|m|1|42363|Savings Account
+EndAccount
+Account|EUR|m|3|11483|Checking Account
+EndAccount
+EndCustomer
+Customer|u|18757|u|1450070408
+No Accounts
+EndCustomer
+Customer|y|11456|y|1450070408
+Account|USD|y|1|33213|Savings Account
+EndAccount
+Account|LE|y|2|33450|Investment Account
+EndAccount
+EndCustomer

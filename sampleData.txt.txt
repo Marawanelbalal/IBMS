@@ -1,0 +1,23 @@
+Customer|m|31835|m|1450070408
+Account|22108|1|USD
+EndAccount
+Account|12719|1|USD
+EndAccount
+Account|27825|1|USD
+EndAccount
+Account|26659|1|USD
+EndAccount
+EndCustomer
+Customer|u|17665|u|1450070408
+No Accounts
+EndCustomer
+Customer|y|12225|y|1450070408
+Account|30946|1|USD
+EndAccount
+Account|39435|1|USD
+EndAccount
+Account|14596|1|USD
+EndAccount
+Account|13015|1|USD
+EndAccount
+EndCustomer

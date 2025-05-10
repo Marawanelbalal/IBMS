@@ -121,7 +121,7 @@ bool LoginOperation::validateCredentials() {
         user = new Administrator("A002", "ADMIN", password);  // Make sure the name matches exactly what we're using
         return true;
     } else if (username == "customer" && password == "customer123") {
-        user = new Customer("NAME","C001", password);
+        user = new Customer("NAME","C001", password,"010050502202");
         return true;
     }
     

@@ -71,7 +71,8 @@ public:
 
     Customer();
 
-    Customer(const std::string& userName,const std::string& id, const std::string& pwd);
+    Customer(const std::string& userName,const std::string& id, const std::string& pwd, const std::string& phoneNumber);
+
 
     string getPassword();
 

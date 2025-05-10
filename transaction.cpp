@@ -21,6 +21,10 @@ Transaction::Transaction(const std::string& id, double amt, const std::string& t
     }
     description = ss.str();
 }
+Transaction::Transaction() {
+    transactionID = "0";
+    amount = 0.0;
+}
 
 bool Transaction::execute() {
     // Base class implementation - derived classes will override

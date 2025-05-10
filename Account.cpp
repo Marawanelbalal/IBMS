@@ -8,11 +8,12 @@ Account::Account() {
     this->balance = 0.0;
     this->accountId = 00000;
 }
-Account::Account(string currency, string owner, float balance, int  accountId) {
+Account::Account(string currency, string owner, double balance, int  accountId, string accountType) {
     this->currency = currency;
     this->owner = owner;
     this->balance = balance;
     this->accountId = accountId;
+    this->accountType = accountType;
 }
 float Account::getBalance() const {
     return balance;
@@ -20,6 +21,11 @@ float Account::getBalance() const {
 int Account::getAccountNumber() const {
     return accountId;
 }
+string Account::getOwner() const {
+    return owner;
+}
+
+string Account::getAccountType() const { return accountType; }
 
 vector<Transaction> Account::getTransactionHistory() const{ return Transactions; }
 

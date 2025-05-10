@@ -24,6 +24,12 @@ using namespace std;
         }
         
     }
+    void UI::load(map<std::string, Customer>& customers) {
+        IBMS->setCustomers(customers);
+    }
+    Bank* UI::getBank() const {
+        return IBMS;
+    }
     Customer* UI::getCurrentCustomer() {
         map<std::string, Customer> customers = IBMS->getCustomers();
         Customer* currentCustomer = new Customer(customers[currentUsername]);
@@ -177,6 +183,9 @@ using namespace std;
         cout << "   Enter Email: ";
         string email = getTextInput();
 
+        cout << "   Add Phone Number: ";
+        string phoneNumber = getTextInput();
+
         cout << "   Create Username: ";
         string username = getTextInput();
 
@@ -193,7 +202,7 @@ using namespace std;
             displaySuccess("   Registration successful! Welcome to our great Islamic Bank.");
             string userID = to_string(IBMS->generateUniqueAccountId());
      
-            IBMS->addUser(userID, username, password, "customer");
+            IBMS->addUser(userID, username, password, "customer",phoneNumber);
 
         }
 
@@ -289,6 +298,21 @@ using namespace std;
         cout << "   3. Investment Account\n";
         cout << "   Enter your choice: ";
         int accountType = getIntInput();
+        string accountTypeStr;
+        switch (accountType) {
+        case 1:
+            accountTypeStr = "Savings Account";
+            break;
+        case 2:
+            accountTypeStr = "Checking Account";
+            break;
+        case 3:
+            accountTypeStr = "Investment Account";
+            break;
+        default:
+            displayError("Invalid Number Entered");
+            break;
+        }
 
         cout << "   Select Currency:\n";
         cout << "   1. USD (US Dollar)\n";
@@ -325,7 +349,7 @@ using namespace std;
         displaySuccess("Account created successfully!");
         currentCustomer = getCurrentCustomer();
         int accountID = IBMS->generateUniqueAccountId();
-        IBMS->createAccount(currencystr, currentUsername, initialAmount,accountID);
+        IBMS->createAccount(currencystr, currentUsername, initialAmount,accountID,accountTypeStr);
         IBMS->addAccountToCustomer(accountID, currentUsername);
         cout << "   Account Details:\n";
         cout << "   Account Number: " << 1000000 + rand() % 9000000 << "\n";
@@ -625,6 +649,9 @@ using namespace std;
         cout << "   Enter Full Name: ";
         string fullName = getTextInput();
 
+        cout << "   Add Phone Number: ";
+        string phoneNumber = getTextInput();
+
         cout << "   Create Password: ";
         string password = getTextInput();
 
@@ -636,7 +663,7 @@ using namespace std;
 
         string role = (roleChoice == 1) ? "admin" : "customer";
 
-        bool success = IBMS->addUser(userId, fullName, password, role);
+        bool success = IBMS->addUser(userId, fullName, password, role,phoneNumber);
 
         if (success) {
             displaySuccess("User account created successfully!");
@@ -672,6 +699,7 @@ using namespace std;
 
         if (confirmation == "y" || confirmation == "Y") {
             bool success = IBMS->deleteUser(username);
+
             
             if (success) {
                 displaySuccess("User account deleted successfully!");
@@ -723,6 +751,9 @@ using namespace std;
         cout << "\n   Enter User ID (not Username) to reset password for: ";
         string userId = getTextInput();
 
+        cout << "   Enter Phone Number: ";
+        string phoneNumber = getTextInput();
+
         cout << "   Enter New Password: ";
         string newPassword = getTextInput();
 
@@ -735,7 +766,7 @@ using namespace std;
             return;
         }
 
-        bool success = IBMS->resetUserPassword(userId, newPassword);
+        bool success = IBMS->resetUserPassword(userId, newPassword,phoneNumber);
         
         if (success) {
             displaySuccess("Password reset successfully! User can now login with the new password.");

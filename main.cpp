@@ -6,6 +6,7 @@
 #include "User.h"
 #include "Bank.h"
 #include "UI.h"
+#include "FileManager.h"
 
 //using namespace std;
 //
@@ -64,6 +65,14 @@
 int main() {
     UI bankUI;
     bankUI.initializeBank();
+    Bank* UIbank = bankUI.getBank();
+    std::map<std::string, Customer>& customers = UIbank->getCustomers();
+    std::string fileName = "sampleData2";
+    FileManager::loadData(customers, fileName);
+    bankUI.load(customers);
     bankUI.run();
+
+    
+    
     return 0;
 }
