@@ -1,13 +1,3 @@
-#include <iostream>
-#include <vector>
-#include <string>
-#include "Account.h"
-#include "Transaction.h"
-#include "User.h"
-#include "Bank.h"
-#include "UI.h"
-#include "FileManager.h"
-
 //using namespace std;
 //
 //int main() {
@@ -62,17 +52,27 @@
 //
 //    return 0;
 //}
-int main() {
-    UI bankUI;
-    bankUI.initializeBank();
-    Bank* UIbank = bankUI.getBank();
-    std::map<std::string, Customer>& customers = UIbank->getCustomers();
-    std::string fileName = "sampleData2";
-    FileManager::loadData(customers, fileName);
-    bankUI.load(customers);
-    bankUI.run();
+#include <iostream>
+#include "ApplicationManager.h"
 
-    
-    
+int main() {
+    // Create the application manager with the data file name
+    ApplicationManager appManager("sampleData2");
+
+    // Initialize the application components
+    if (!appManager.initialize()) {
+        std::cerr << "Failed to initialize the application. Exiting..." << std::endl;
+        return 1;
+    }
+
+    // Load data from file
+    if (!appManager.loadData()) {
+        std::cout << "Warning: Could not load data from file. Starting with empty database." << std::endl;
+    }
+
+    // Run the application
+    appManager.run();
+
+    std::cout << "Application terminated successfully." << std::endl;
     return 0;
 }
