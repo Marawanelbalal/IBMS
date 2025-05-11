@@ -22,7 +22,8 @@ public:
     // User management
     void viewAllUsers();
     void setCustomers(std::map<std::string, Customer>& customers);
-    map<int, Account*> getAccounts();
+    void setAccounts(std::map<int, Account*>& accounts);
+    map<int, Account*>& getAccounts();
     map<std::string, Customer>& getCustomers();
     map<std::string, User*> getUsers();
     void viewAllAccounts();

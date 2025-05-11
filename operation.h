@@ -13,7 +13,7 @@ protected:
     std::string message;
     Customer* currentCustomer = nullptr;
     Account* acc = nullptr;
-    float amount = 0;
+    float amount;
     std::string operationID;
     std::string operationType;
     std::time_t timestamp;
@@ -22,7 +22,7 @@ protected:
 
 public:
     Operation();
-    Operation(const std::string& id, const std::string& type, float amt);
+    Operation(const std::string& type, float amt = 0, const std::string& id = "");
     virtual ~Operation();
 
     virtual bool execute() = 0; // Pure virtual function
@@ -44,17 +44,17 @@ class LoginOperation : public Operation {
 private:
     std::string username;
     std::string password;
-    User* user = nullptr;
+    Customer user;
     int failedAttempts = 0;
 
 public:
-    LoginOperation(const std::string& id, const std::string& uname, const std::string& pwd);
+    LoginOperation(const std::string& uname, const std::string& pwd, Bank* IBMS);
     bool execute() override;
     bool validate() override;
     bool validateCredentials();
     bool createUserSession();
     void handleFailedLogin();
-    User* getLoggedInUser() const;
+    Customer getLoggedInUser() const;
 };
 
 class TransferOperation : public Operation {
@@ -62,9 +62,11 @@ class TransferOperation : public Operation {
     std::string destinationAccountNumber;
     std::string currency;
     Transaction* transaction = nullptr;
-
+    Account* sourceAccount = nullptr;
+    Account* destAccount = nullptr;
+    Customer* currentCustomer = nullptr;
 public:
-    TransferOperation(const std::string& id, const std::string& source, const std::string& destination, double amt, const std::string& curr);
+    TransferOperation(Customer* currentCustomer, const std::string& source, const std::string& destination, float amt, Bank* IBMS);
     ~TransferOperation();
 
     bool execute() override;
@@ -83,9 +85,11 @@ private:
     std::time_t endDate;
     std::string transactionType;
     std::vector<Transaction*> transactions;
+    Customer* currentCustomer = nullptr;
+    Account* account = nullptr;
 
 public:
-    TransactionHistoryOperation(const std::string& id, const std::string& account, std::time_t start, std::time_t end);
+    TransactionHistoryOperation(Customer* currentCustomer,const std::string& account, Bank* IBMS);
     ~TransactionHistoryOperation();
 
     bool execute() override;

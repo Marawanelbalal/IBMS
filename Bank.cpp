@@ -14,14 +14,14 @@ Bank::Bank() {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 }
 
-
-
-map<int, Account*> Bank::getAccounts() { return accounts; }
+map<int, Account*>& Bank::getAccounts() { return accounts; }
 
 void Bank::setCustomers(std::map<std::string, Customer>& customers) {
     this->customers = customers;
 }
-
+void Bank::setAccounts(std::map<int, Account*>& accounts) {
+    this->accounts = accounts;
+}
 Bank::~Bank() {
     // Clean up dynamically allocated User objects
     for (auto& pair : users) {

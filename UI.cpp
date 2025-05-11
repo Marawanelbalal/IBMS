@@ -18,13 +18,14 @@ using namespace std;
         if (IBMS != nullptr) delete IBMS;
 
     }
+
     void UI::initializeBank() {
         if (IBMS == nullptr) {
             IBMS = new Bank(this);
         }
         
     }
-    void UI::load(map<std::string, Customer>& customers) {
+    void UI::load(map<std::string, Customer>& customers, std::map<int, Account*>& accounts) {
         IBMS->setCustomers(customers);
     }
     Bank* UI::getBank() const {
@@ -123,6 +124,8 @@ using namespace std;
         cout << "   Password: ";
         string password = getTextInput();
 
+        
+        
         // Admin login
         if ((username == "admin" || username == "ADMIN") && password == "202400993+") {
             loggedIn = true;
@@ -131,40 +134,15 @@ using namespace std;
             displaySuccess("   Login successful as an Administrator");
         }
         else {
-            // Customer login
-            map<std::string, Customer> currentCustomers = IBMS->getCustomers();
+            Operation* Op = new LoginOperation(username, password, IBMS);
 
-            if (currentCustomers.count(username) > 0) {
-                Customer selectedCustomer = currentCustomers[username];
-                
-                if (selectedCustomer.getPassword() == password) {
-                    loggedIn = true;
-                    currentUserRole = "Customer";
-                    currentUsername = username;
-                    displaySuccess("   Login successful as a Customer");
-                }
-                else {
-                    displayError("   Invalid Username/Password");
-                }
+            if (Op->execute()) {
+                loggedIn = true;
+                currentUserRole = "Customer";
+                currentUsername = username;
+                displaySuccess("    Login successful as a costumer");
             }
-            else {
-                // Try looking up in users map as well for redundancy
-                bool userFound = false;
-                for (const auto& pair : IBMS->getUsers()) {
-                    if (pair.second->getName() == username && pair.second->getPassword() == password) {
-                        loggedIn = true;
-                        currentUserRole = pair.second->getRole();
-                        currentUsername = username;
-                        displaySuccess("   Login successful as a " + currentUserRole);
-                        userFound = true;
-                        break;
-                    }
-                }
-                
-                if (!userFound) {
-                    displayError("   Invalid Username");
-                }
-            }
+            else displayError(Op->getMessage());
         }
         waitForEnter();
     }
@@ -490,19 +468,25 @@ using namespace std;
         displayWelcome();
 
         cout << "   Enter Source Account Number: ";
-        int sourceAccount = getIntInput();
-
+        string sourceAccount = getTextInput();
+  
         cout << "   Enter Destination Account Number: ";
-        int destAccount = getIntInput();
+        string destAccount = getTextInput();
 
         cout << "   Enter Transfer Amount: ";
         double amount = getDoubleInput();
 
+        Operation* Operator = new TransferOperation(currentCustomer,sourceAccount,destAccount,amount,IBMS);
+        if (Operator->execute()) {
+
+            
         // make this process a real transfer.
-        displaySuccess("   Transfer completed successfully!");
-        cout << "   Amount " << fixed << setprecision(2) << amount
-            << " transferred from account #" << sourceAccount
-            << " to account #" << destAccount << "\n";
+            displaySuccess("   Transfer completed successfully!");
+            cout << "   Amount " << fixed << setprecision(2) << amount
+                << " transferred from account #" << sourceAccount
+                << " to account #" << destAccount << "\n";
+        }
+        else displayError(Operator->getMessage());
 
         waitForEnter();
     }
@@ -531,21 +515,20 @@ using namespace std;
 
         cout << "   Enter Account Number: ";
 
-        int accountNumber = getIntInput();
+        string accountNumber = getTextInput();
 
         bool foundAccount = false;
   
         vector<Account*> accounts = currentCustomer->getAccounts();
         for (Account* acc : accounts) {
-            if (acc->getAccountNumber() == accountNumber) {
+            if (to_string(acc->getAccountNumber()) == accountNumber) {
                 foundAccount = true;
                 vector<Transaction> Transactions = acc->getTransactionHistory();
                 if (Transactions.empty()) {
-                    displayError("Account: " + to_string(accountNumber) + " does not have any transactions to show.");
+                    displayError("Account: " + accountNumber + " does not have any transactions to show.");
                 }
                 else {
-                    displayMessage("For Account: " + to_string(accountNumber) + "\n" + "The past transactions are: " + "\n");
-                    vector <string> involvedAccounts;
+             vector <string> involvedAccounts;
                     double amount;
                     for (const Transaction& Tran : Transactions) {
                         involvedAccounts = Tran.getInvolvedAccounts();
@@ -556,7 +539,13 @@ using namespace std;
                 }
             }
         }
-        if (!foundAccount) displayError("Account not found.");
+        if (!foundAccount) displayError("Account not found.");           
+        
+        Operation* Operator = new TransactionHistoryOperation(currentCustomer,accountNumber,IBMS);
+        if (Operator->execute()) {
+
+        }
+        else displayError(Operator->getMessage());
         waitForEnter();
     }
 

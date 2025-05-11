@@ -53,12 +53,13 @@ bool ApplicationManager::loadData() {
     try {
         // Get reference to customers map
         std::map<std::string, Customer>& customers = bank->getCustomers();
+        std::map<int, Account*>& accounts = bank->getAccounts();
 
         // Load data using FileManager
-        FileManager::loadData(customers, dataFileName);
+        FileManager::loadData(customers,accounts, dataFileName);
 
         // Update UI with loaded data
-        bankUI->load(customers);
+        bankUI->load(customers,accounts);
 
         return true;
     }

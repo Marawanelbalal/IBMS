@@ -24,6 +24,9 @@ int Account::getAccountNumber() const {
 string Account::getOwner() const {
     return owner;
 }
+string Account::getCurrency() const {
+    return currency;
+}
 
 string Account::getAccountType() const { return accountType; }
 
@@ -61,6 +64,4 @@ void Account::addAmount(float amount) {
 void Account::subtractAmount(float amount) {
     balance -= amount;
 }
-string Account::getCurrency() const {
-    return currency;
-}
+
