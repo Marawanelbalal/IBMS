@@ -1,14 +1,15 @@
 #include "operation.h"
+#include "Bank.h"
 #include <iostream>
 #include <sstream>
 #include <iomanip>
 #include <ctime>
 
 // Base Operation implementation
-Operation::Operation(){
+Operation::Operation() {
 
 }
-Operation::Operation(const std::string& id, const std::string& type)
+Operation::Operation(const std::string& id, const std::string& type,float amt)
     : operationID(id), operationType(type), successful(false) {
     timestamp = std::time(nullptr);
 }
@@ -38,10 +39,9 @@ std::string Operation::getStatusMessage() const {
 }
 
 void Operation::logOperation() const {
-    // In a real implementation, this would write to a log file or database
-    std::cout << "Operation log: " << operationID << " | " << operationType 
-              << " | Status: " << (successful ? "Success" : "Failed")
-              << " | Message: " << statusMessage << std::endl;
+    // Instead of printing to console, log the operation status to the UI or a log file
+    // The UI can retrieve the `statusMessage` using `getStatusMessage()`
+    // Example: UI can display `statusMessage` to the user
 }
 
 string Operation::getMessage() {
@@ -76,21 +76,22 @@ bool LoginOperation::execute() {
         handleFailedLogin();
         return false;
     }
-    
+
     if (validateCredentials()) {
         successful = createUserSession();
         if (successful) {
             statusMessage = "Login successful for user: " + username;
-        } else {
+        }
+        else {
             statusMessage = "Failed to create session for user: " + username;
             handleFailedLogin();
         }
-    } else {
+    }
+    else {
         statusMessage = "Invalid credentials for user: " + username;
         handleFailedLogin();
     }
-    
-    logOperation();
+
     return successful;
 }
 
@@ -104,27 +105,15 @@ bool LoginOperation::validate() {
 }
 
 bool LoginOperation::validateCredentials() {
-    // In a real system, this would check against a database
-    // For this example, we'll simulate finding the user and checking password
-    
-    // Simulated user repository check
-    // This is where you would interact with your user database
-    
-    // For demonstration purposes only (replace with actual implementation)
-    if (username == "admin" && password == "admin123") {
-        user = new Administrator("A001", "Admin User", password);
-        return true;
-    } else if (username == "admin" && password == "202400993+") {
-        user = new Administrator("A001", "admin", password);  // Make sure the name matches exactly what we're using
-        return true;
-    } else if (username == "ADMIN" && password == "202400993+") {
-        user = new Administrator("A002", "ADMIN", password);  // Make sure the name matches exactly what we're using
-        return true;
-    } else if (username == "customer" && password == "customer123") {
-        user = new Customer("NAME","C001", password,"010050502202");
+    // Check against the users map in the Bank class
+    auto users = IBMS->getUsers();
+    auto it = users.find(username);
+    if (it != users.end() && it->second->getPassword() == password) {
+        user = it->second;
         return true;
     }
-    
+
+    user = nullptr;
     return false;
 }
 
@@ -149,14 +138,13 @@ User* LoginOperation::getLoggedInUser() const {
 }
 
 // TransferOperation implementation
-TransferOperation::TransferOperation(const std::string& id, const std::string& source, 
-                                   const std::string& destination, double amt, const std::string& curr)
-    : Operation(id, "Transfer"), sourceAccountNumber(source), 
-      destinationAccountNumber(destination), amount(amt), currency(curr), transaction(nullptr) {
+TransferOperation::TransferOperation(const std::string& id, const std::string& source,
+    const std::string& destination,double amt, const std::string& curr)
+    : Operation(id, "Transfer",amt), sourceAccountNumber(source),
+    destinationAccountNumber(destination), currency(curr), transaction(nullptr) {
 }
 
 TransferOperation::~TransferOperation() {
-    // Clean up the transaction pointer if needed
     delete transaction;
 }
 
@@ -164,20 +152,22 @@ bool TransferOperation::execute() {
     if (!validate()) {
         return false;
     }
-    
+
     if (collectTransferInfo() && validateTransfer()) {
         successful = executeTransfer();
         if (successful) {
             createTransactionRecord();
-            statusMessage = "Transfer of " + std::to_string(amount) + " " + currency + 
-                           " from " + sourceAccountNumber + " to " + destinationAccountNumber + " successful";
-        } else {
+            statusMessage = "Transfer of " + std::to_string(amount) + " " + currency +
+                " from " + sourceAccountNumber + " to " + destinationAccountNumber + " successful";
+        }
+        else {
             statusMessage = "Transfer failed";
         }
-    } else {
+    }
+    else {
         statusMessage = "Transfer validation failed";
     }
-    
+
     logOperation();
     return successful;
 }
@@ -188,12 +178,12 @@ bool TransferOperation::validate() {
         statusMessage = "Source or destination account number cannot be empty";
         return false;
     }
-    
+
     if (amount <= 0) {
         statusMessage = "Transfer amount must be positive";
         return false;
     }
-    
+
     return true;
 }
 
@@ -204,45 +194,51 @@ bool TransferOperation::collectTransferInfo() {
 }
 
 bool TransferOperation::validateTransfer() {
-    // In a real system, this would check:
-    // 1. If source account exists and belongs to the requesting user
-    // 2. If destination account exists
-    // 3. If source account has sufficient funds
-    // 4. Handle currency conversion if needed
-    
-    // For demonstration purposes only (replace with actual implementation)
-    // Simulated account checks
-    bool sourceExists = true; // Would check in database
-    bool destExists = true;   // Would check in database
-    bool sufficientFunds = true; // Would check balance
-    
-    return sourceExists && destExists && sufficientFunds;
+    // Check if source and destination accounts exist
+    Account* sourceAccount = currentCustomer->getAccountWithID(std::stoi(sourceAccountNumber));
+    Account* destAccount = IBMS->getAccountById(std::stoi(destinationAccountNumber));
+
+    if (!sourceAccount || !destAccount) {
+        statusMessage = "Source or destination account does not exist.";
+        return false;
+    }
+
+    // Check if source account has sufficient funds
+    if (sourceAccount->getBalance() < amount) {
+        statusMessage = "Insufficient funds in source account.";
+        return false;
+    }
+
+    return true;
 }
 
 bool TransferOperation::executeTransfer() {
-    // In a real system, this would:
-    // 1. Deduct from source account
-    // 2. Add to destination account
-    // 3. Handle atomicity (either both succeed or both fail)
-    
-    // For demonstration purposes only (replace with actual implementation)
-    // Simulated transfer execution
-    return true; // Assuming transfer succeeded
+    Account* sourceAccount = currentCustomer->getAccountWithID(std::stoi(sourceAccountNumber));
+    Account* destAccount = IBMS->getAccountById(std::stoi(destinationAccountNumber));
+
+    if (!sourceAccount || !destAccount) {
+        return false;
+    }
+
+    // Deduct from source and add to destination
+    sourceAccount->subtractAmount(amount);
+    destAccount->addAmount(amount);
+
+    return true;
 }
 
 bool TransferOperation::createTransactionRecord() {
     // Create a Transaction record for this transfer
-    std::vector<std::string> accounts = {sourceAccountNumber, destinationAccountNumber};
+    std::vector<std::string> accounts = { sourceAccountNumber, destinationAccountNumber };
     transaction = new Transaction(operationID, amount, "Transfer", accounts);
-    
+
     // Set additional details
     std::stringstream desc;
     desc << "Transfer of " << std::fixed << std::setprecision(2) << amount << " " << currency
-         << " from account " << sourceAccountNumber 
-         << " to account " << destinationAccountNumber;
+        << " from account " << sourceAccountNumber
+        << " to account " << destinationAccountNumber;
     transaction->setDescription(desc.str());
     transaction->setIsValid(true);
-    
     return true;
 }
 
@@ -251,27 +247,35 @@ Transaction* TransferOperation::getTransaction() const {
 }
 
 // TransactionHistoryOperation implementation
-TransactionHistoryOperation::TransactionHistoryOperation(const std::string& id, 
-                                                       const std::string& account,
-                                                       std::time_t start, std::time_t end)
-    : Operation(id, "TransactionHistory"), accountNumber(account), 
-      startDate(start), endDate(end), transactionType("") {
+TransactionHistoryOperation::TransactionHistoryOperation(const std::string& id,
+    const std::string& account,
+    std::time_t start, std::time_t end)
+    : Operation(id, "TransactionHistory"), accountNumber(account),
+    startDate(start), endDate(end), transactionType("") {
+}
+
+TransactionHistoryOperation::~TransactionHistoryOperation() {
+    for (auto* trans : transactions) {
+        delete trans;
+    }
+    transactions.clear();
 }
 
 bool TransactionHistoryOperation::execute() {
     if (!validate()) {
         return false;
     }
-    
+
     if (collectFilterCriteria() && retrieveTransactions()) {
         formatTransactionList();
         successful = true;
-        statusMessage = "Successfully retrieved " + std::to_string(transactions.size()) + 
-                       " transactions for account " + accountNumber;
-    } else {
+        statusMessage = "Successfully retrieved " + std::to_string(transactions.size()) +
+            " transactions for account " + accountNumber;
+    }
+    else {
         statusMessage = "Failed to retrieve transaction history";
     }
-    
+
     logOperation();
     return successful;
 }
@@ -282,13 +286,13 @@ bool TransactionHistoryOperation::validate() {
         statusMessage = "Account number cannot be empty";
         return false;
     }
-    
+
     // Check if date range is valid
     if (endDate < startDate) {
         statusMessage = "End date cannot be before start date";
         return false;
     }
-    
+
     return true;
 }
 
@@ -299,61 +303,47 @@ bool TransactionHistoryOperation::collectFilterCriteria() {
 }
 
 bool TransactionHistoryOperation::retrieveTransactions() {
-    // In a real system, this would query a database for transactions
-    // that match the filter criteria
-    
-    // For demonstration purposes only (replace with actual implementation)
-    // Simulated transaction retrieval
-    
     // Clear existing transactions
     for (auto* trans : transactions) {
         delete trans;
     }
     transactions.clear();
-    
-    // Create some sample transactions
-    std::vector<std::string> accounts = {accountNumber};
-    
-    // Sample deposit
-    Transaction* deposit = new Transaction("T001", 500.00, "Deposit", accounts);
-    deposit->setDescription("Deposit to account " + accountNumber);
-    transactions.push_back(deposit);
-    
-    // Sample withdrawal
-    Transaction* withdrawal = new Transaction("T002", 200.00, "Withdrawal", accounts);
-    withdrawal->setDescription("Withdrawal from account " + accountNumber);
-    transactions.push_back(withdrawal);
-    
-    // Sample transfer if not filtering by type or if type is "Transfer"
-    if (transactionType.empty() || transactionType == "Transfer") {
-        std::vector<std::string> transferAccounts = {accountNumber, "ACC002"};
-        Transaction* transfer = new Transaction("T003", 300.00, "Transfer", transferAccounts);
-        transfer->setDescription("Transfer from account " + accountNumber + " to ACC002");
-        transactions.push_back(transfer);
+
+    // Fetch transactions from the account
+    Account* account = currentCustomer->getAccountWithID(std::stoi(accountNumber));
+    if (!account) {
+        statusMessage = "Account not found.";
+        return false;
     }
-    
+
+    std::vector<Transaction> accountTransactions = account->getTransactionHistory();
+    for (const Transaction& trans : accountTransactions) {
+        transactions.push_back(new Transaction(trans));
+    }
+
     return true;
 }
 
-void TransactionHistoryOperation::formatTransactionList() const {
-    // In a real system, this would format the transactions for display
-    
-    std::cout << "Transaction History for Account: " << accountNumber << std::endl;
-    std::cout << "--------------------------------------------------" << std::endl;
-    std::cout << std::left << std::setw(10) << "ID" 
-              << std::setw(15) << "Type" 
-              << std::setw(15) << "Amount" 
-              << "Description" << std::endl;
-    std::cout << "--------------------------------------------------" << std::endl;
-    
+void TransactionHistoryOperation::formatTransactionList() {
+    std::ostringstream formattedList;
+    formattedList << "Transaction History for Account: " << accountNumber << "\n";
+    formattedList << "--------------------------------------------------\n";
+    formattedList << std::left << std::setw(10) << "ID"
+        << std::setw(15) << "Type"
+        << std::setw(15) << "Amount"
+        << "Description\n";
+    formattedList << "--------------------------------------------------\n";
+
     for (const auto* trans : transactions) {
-        std::cout << std::left << std::setw(10) << trans->getTransactionID() 
-                  << std::setw(15) << trans->getTransactionType() 
-                  << std::setw(15) << std::fixed << std::setprecision(2) << trans->getAmount() 
-                  << trans->getDescription() << std::endl;
+        formattedList << std::left << std::setw(10) << trans->getTransactionID()
+            << std::setw(15) << trans->getTransactionType()
+            << std::setw(15) << std::fixed << std::setprecision(2) << trans->getAmount()
+            << trans->getDescription() << "\n";
     }
-    
-    std::cout << "--------------------------------------------------" << std::endl;
+
+    formattedList << "--------------------------------------------------\n";
+
+    statusMessage = formattedList.str();
 }
 
 std::vector<Transaction*> TransactionHistoryOperation::getTransactions() const {
@@ -367,6 +357,14 @@ void TransactionHistoryOperation::setDateRange(std::time_t start, std::time_t en
 
 void TransactionHistoryOperation::setTransactionType(const std::string& type) {
     transactionType = type;
+}
+
+std::string TransactionHistoryOperation::viewTransactionHistory() {
+    if (!execute()) {
+        return "Failed to retrieve transaction history: " + statusMessage;
+    }
+
+    return statusMessage;
 }
 
 //Implementation of the Deposit functionality class.
@@ -388,11 +386,11 @@ bool Deposit::validate() {
         return false;
     }
     else if (amount <= 0) {
-            message = "Amount must be a positive number";
-            return false;
-        }
-    return true;
+        message = "Amount must be a positive number";
+        return false;
     }
+    return true;
+}
 
 
 
@@ -400,23 +398,22 @@ bool Deposit::validate() {
 //Implementation of the Withdraw functionality class.
 
 bool Withdraw::validate() {
-    //The message is returned to the UI class to display it as the error message.
-
-    if (not accBelongsToCustomer()) {
+    if (!accBelongsToCustomer()) {
         return false;
     }
-    else {
-        if (amount <= 0) {
-            message = "Amount must be a positive number";
-            return false;
-        }
-        else {
-            if (acc->getBalance() < amount) {
-                message = "Couldn't withdraw amount: " + to_string(amount) + " from account: " + to_string(acc->getAccountNumber()) + " with a balance of: " + to_string(acc->getBalance());
-                return false;
-            }
-        }
+
+    if (amount <= 0) {
+        message = "Amount must be a positive number";
+        return false;
     }
+
+    if (!acc || acc->getBalance() < amount) {
+        message = "Couldn't withdraw amount: " + std::to_string(amount) +
+            " from account: " + std::to_string(acc->getAccountNumber()) +
+            " with a balance of: " + std::to_string(acc->getBalance());
+        return false;
+    }
+
     return true;
 }
 bool Withdraw::execute() {
@@ -424,9 +421,9 @@ bool Withdraw::execute() {
         return false;
     }
     else {
-            acc->subtractAmount(amount);
-            return true;
-        }
+        acc->subtractAmount(amount);
+        return true;
+    }
 
 }
 
@@ -446,3 +443,54 @@ bool BalanceInquiry::validate() {
     return accBelongsToCustomer();
 }
 
+//Implementation of the TransactionOperation functionality class.
+
+bool TransactionOperation::execute() {
+    if (!validate()) {
+        statusMessage = "Transaction validation failed.";
+        return false;
+    }
+
+    if (processTransaction()) {
+        successful = true;
+        statusMessage = "Transaction completed successfully.";
+    }
+    else {
+        successful = false;
+        statusMessage = "Transaction failed.";
+    }
+
+    logOperation();
+    return successful;
+}
+
+bool TransactionOperation::validate() {
+    // Basic validation logic
+    if (amount <= 0) {
+        statusMessage = "Transaction amount must be positive.";
+        return false;
+    }
+
+    if (!accBelongsToCustomer()) {
+        statusMessage = "Account does not belong to the customer.";
+        return false;
+    }
+
+    return true;
+}
+
+bool TransactionOperation::processTransaction() {
+    if (!acc) {
+        statusMessage = "Account is not valid.";
+        return false;
+    }
+
+    if (acc->getBalance() >= amount) {
+        acc->subtractAmount(amount); // Deduct the amount
+        return true;
+    }
+    else {
+        statusMessage = "Insufficient balance for the transaction.";
+        return false;
+    }
+}

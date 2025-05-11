@@ -32,7 +32,7 @@ void FileManager::saveData(std::map<std::string, Customer>& customers, std::stri
 		}
 }
 
-void FileManager::loadData(map<std::string, Customer>& customers, std::string& filename) {
+void FileManager::loadData(map<std::string, Customer>& customers, std::map<int, Account*>& accounts, std::string& filename) {
 	std::ifstream inFile(filename + ".txt");
 	if (!inFile.is_open()) {
 		std::cout << "Couldn't open file!\n";
@@ -69,6 +69,7 @@ void FileManager::loadData(map<std::string, Customer>& customers, std::string& f
 		}
 		else if (parts[0] == "EndAccount") {
 			currentCustomer.addAccount(currentAccount);
+			accounts[currentAccount->getAccountNumber()] = currentAccount;
 			currentAccount = nullptr;
 		}
 		else if (parts[0] == "No Accounts" or parts[0] == "EndCustomer") {
