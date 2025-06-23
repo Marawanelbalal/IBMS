@@ -22,6 +22,10 @@ void Bank::setCustomers(std::map<std::string, Customer>& customers) {
 void Bank::setAccounts(std::map<int, Account*>& accounts) {
     this->accounts = accounts;
 }
+void Bank::setUsers(std::map<std::string, User*>& users) {
+    this->users = users;
+}
+
 Bank::~Bank() {
     // Clean up dynamically allocated User objects
     for (auto& pair : users) {

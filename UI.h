@@ -27,7 +27,7 @@ public:
 	
 	UI();
 	~UI();
-	void load(std::map<std::string,Customer>& customers, std::map<int, Account*>& accounts);
+	void load(std::map<std::string,Customer>& customers, std::map<int, Account*>& accounts, std::map<std::string, User*> users);
 	void initializeBank();
 	void clearScreen() const;
 	void displayHeader() const;

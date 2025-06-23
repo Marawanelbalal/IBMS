@@ -1,15 +1,12 @@
-Customer|Unknown|||1040440440
-No Accounts
-EndCustomer
-Customer|m|17541|m|1450070408
-No Accounts
-EndCustomer
-Customer|u|18757|u|1450070408
-No Accounts
-EndCustomer
-Customer|y|11456|y|1450070408
-Account|USD|y|1|33213|Savings Account
+Customer|User1|User1|Pass2|1450070408
+Account|USD|y|0|33213|Savings Account
+Transaction||1000|Transfer|33213|33214
+EndTransaction
 EndAccount
-Account|LE|y|2|33450|Investment Account
+Account|USD|y|2000|33214|Savings Account
+Transaction||1000|Transfer|33213|33214
+EndTransaction
+EndAccount
+Account|USD|User1|5000|25294|Savings Account
 EndAccount
 EndCustomer

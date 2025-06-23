@@ -54,12 +54,13 @@ bool ApplicationManager::loadData() {
         // Get reference to customers map
         std::map<std::string, Customer>& customers = bank->getCustomers();
         std::map<int, Account*>& accounts = bank->getAccounts();
+        std::map<std::string, User*> users = bank->getUsers();
 
         // Load data using FileManager
-        FileManager::loadData(customers,accounts, dataFileName);
+        FileManager::loadData(customers,accounts,users,dataFileName);
 
         // Update UI with loaded data
-        bankUI->load(customers,accounts);
+        bankUI->load(customers,accounts,users);
 
         return true;
     }
@@ -81,7 +82,7 @@ bool ApplicationManager::saveData() {
 
         // Save data using FileManager
         FileManager::saveData(customers, dataFileName);
-
+        std::cout << "Saved";
         return true;
     }
     catch (const std::exception& e) {

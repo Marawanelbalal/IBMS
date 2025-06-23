@@ -72,6 +72,7 @@ int main() {
 
     // Run the application
     appManager.run();
+    appManager.saveData();
 
     std::cout << "Application terminated successfully." << std::endl;
     return 0;

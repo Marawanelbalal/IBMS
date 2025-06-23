@@ -25,8 +25,10 @@ using namespace std;
         }
         
     }
-    void UI::load(map<std::string, Customer>& customers, std::map<int, Account*>& accounts) {
+    void UI::load(map<std::string, Customer>& customers, std::map<int, Account*>& accounts, std::map<std::string, User*> users) {
         IBMS->setCustomers(customers);
+        IBMS->setAccounts(accounts);
+        IBMS->setUsers(users);
     }
     Bank* UI::getBank() const {
         return IBMS;

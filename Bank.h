@@ -23,6 +23,7 @@ public:
     void viewAllUsers();
     void setCustomers(std::map<std::string, Customer>& customers);
     void setAccounts(std::map<int, Account*>& accounts);
+    void setUsers(std::map<std::string, User*>& users);
     map<int, Account*>& getAccounts();
     map<std::string, Customer>& getCustomers();
     map<std::string, User*> getUsers();

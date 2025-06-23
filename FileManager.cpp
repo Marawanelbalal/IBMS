@@ -32,7 +32,7 @@ void FileManager::saveData(std::map<std::string, Customer>& customers, std::stri
 		}
 }
 
-void FileManager::loadData(map<std::string, Customer>& customers, std::map<int, Account*>& accounts, std::string& filename) {
+void FileManager::loadData(map<std::string, Customer>& customers, std::map<int, Account*>& accounts, std::map<std::string, User*>& users, std::string& filename) {
 	std::ifstream inFile(filename + ".txt");
 	if (!inFile.is_open()) {
 		std::cout << "Couldn't open file!\n";
@@ -42,9 +42,11 @@ void FileManager::loadData(map<std::string, Customer>& customers, std::map<int, 
 	std::string currentLine;
 	Customer currentCustomer;
 	Account* currentAccount = nullptr;
+	User* newUser = nullptr;
 	Transaction currentTransaction;
 	vector<string> currentInvolvedAccounts;
 	while (std::getline(inFile, currentLine)) {
+		if (currentLine.empty()) continue;
 		std::stringstream ss(currentLine);
 		std::string part;
 		std::vector<std::string> parts;
@@ -54,6 +56,8 @@ void FileManager::loadData(map<std::string, Customer>& customers, std::map<int, 
 		}
 		if (parts[0] == "Customer") {
 			currentCustomer = Customer(parts[1], parts[2], parts[3], parts[4]);
+			newUser = new Customer(parts[1], parts[2], parts[3], parts[4]);
+
 		}
 
 		else if (parts[0] == "Account") {
@@ -74,6 +78,7 @@ void FileManager::loadData(map<std::string, Customer>& customers, std::map<int, 
 		}
 		else if (parts[0] == "No Accounts" or parts[0] == "EndCustomer") {
 			customers[currentCustomer.getName()] = currentCustomer;
+			users[currentCustomer.getName()] = newUser;
 			currentCustomer = Customer();
 		}
 
